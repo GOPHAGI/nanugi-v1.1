@@ -1,0 +1,48 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		maven { url 'https://maven.aliyun.com/repository/google/' }
+		maven { url 'https://maven.aliyun.com/repository/public/' }
+		maven { url 'https://maven.aliyun.com/repository/spring/' }
+		maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
+		maven { url 'https://maven.aliyun.com/repository/spring-plugin/' }
+
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:2.6.3.RELEASE")
+	}
+}
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.6.3' //2.7.5
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'com.gophagi'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+apply plugin: 'war'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web:2.6.3' //2.7.5
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat:2.6.3'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.3'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' //jpa추가
+	compileOnly 'org.projectlombok:lombok' //lombok추가
+	annotationProcessor 'org.projectlombok:lombok'
+	implementation "org.springframework.cloud:spring-cloud-starter-openfeign:3.1.0" //feignClient
+	//implementation "mysql:mysql-connector-java"
+	//implementation 'org.springframework.boot:spring-boot-starter-security'
+	//implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	//runtimeOnly 'com.h2database:h2'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
