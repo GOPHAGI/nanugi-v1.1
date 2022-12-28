@@ -25,6 +25,8 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+application-kakao.properties
+application-mysql.properties
 
 ### NetBeans ###
 /nbproject/private/
