@@ -27,7 +27,7 @@ out/
 !**/src/test/**/out/
 application-kakao.properties
 application-mysql.properties
-
+application-s3.properties
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
