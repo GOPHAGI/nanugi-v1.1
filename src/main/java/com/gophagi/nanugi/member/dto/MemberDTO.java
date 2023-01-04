@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @ToString
 public class MemberDTO {
 
@@ -20,6 +18,17 @@ public class MemberDTO {
     private Role role;
     private String activated;
     private BigDecimal ratingScore;
+
+    @Builder
+    public MemberDTO(Long id, Long kakaoid, String nickname, String email, Role role, String activated, BigDecimal ratingScore) {
+        this.id = id;
+        this.kakaoid = kakaoid;
+        this.nickname = nickname;
+        this.email = email;
+        this.role = role;
+        this.activated = activated;
+        this.ratingScore = ratingScore;
+    }
 
     public static MemberDTO toMemberDTO(Member member){
         return MemberDTO.builder()
