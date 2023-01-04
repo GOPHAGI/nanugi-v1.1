@@ -96,7 +96,6 @@ public class GroupbuyingBoardCommandService {
 		if (participants.size() > 1) {
 			throw new CannotDeleteBoardException();
 		}
-		participantService.delete(participantId);
 		delete(boardId);
 	}
 

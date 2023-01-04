@@ -44,10 +44,10 @@ public class GroupbuyingBoard extends BaseTime {
 	private Integer limitedNumberOfParticipants;
 	private String description;
 	private Integer viewCount;
-	@OneToMany(mappedBy = "groupbuyingBoard")
+	@OneToMany(mappedBy = "groupbuyingBoard", orphanRemoval = true)
 	private List<Participant> participants;
 
-	@OneToMany(mappedBy = "groupbuyingBoard")
+	@OneToMany(mappedBy = "groupbuyingBoard", orphanRemoval = true)
 	private List<Photo> photos;
 
 	@Builder
