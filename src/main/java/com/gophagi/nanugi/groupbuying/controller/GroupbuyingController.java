@@ -2,32 +2,50 @@ package com.gophagi.nanugi.groupbuying.controller;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import com.gophagi.nanugi.common.util.file.dto.PhotoDTO;
+import com.gophagi.nanugi.common.util.file.service.FileService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardCommandService;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardQueryService;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
+@Slf4j
 @RestController
 public class GroupbuyingController {
 	private final GroupbuyingBoardCommandService commandService;
 	private final GroupbuyingBoardQueryService queryService;
+	private final FileService fileService;
 
 	public GroupbuyingController(GroupbuyingBoardCommandService commandService,
-		GroupbuyingBoardQueryService queryService) {
+								 GroupbuyingBoardQueryService queryService, FileService fileService) {
 		this.commandService = commandService;
 		this.queryService = queryService;
+		this.fileService = fileService;
 	}
 
-	@PostMapping("${groupbuying.create-url}")
+	//@PostMapping("${groupbuying.create-url}")
 	public GroupbuyingBoardDTO create(@RequestBody GroupbuyingBoardDTO dto, HttpSession session) {
 		Long userId = (Long)session.getAttribute("userId");
 		Long boardId = commandService.create(dto, userId);
 		return queryService.retrieve(boardId);
+	}
+
+	@PostMapping(value = "${groupbuying.create-url}",
+				 consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+	public GroupbuyingBoardDTO createV2(@RequestPart GroupbuyingBoardDTO dto,
+										@RequestPart List<MultipartFile> files,
+										HttpSession session) {
+		Long userId = (Long)session.getAttribute("userId");
+		Long boardId = commandService.create(dto, userId);
+		GroupbuyingBoardDTO retiveBoard = queryService.retrieve(boardId);
+		List<PhotoDTO> uploadItemsList  = fileService.saveFiles(userId, retiveBoard, files);
+		return retiveBoard;
 	}
 
 	@PostMapping("${groupbuying.update-url}")
@@ -35,6 +53,17 @@ public class GroupbuyingController {
 		commandService.update(dto);
 		return queryService.retrieve(dto.getId());
 	}
+
+	//@PostMapping(value ="${groupbuying.update-url}",
+	//			 consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+//	public GroupbuyingBoardDTO updateV2(@RequestPart GroupbuyingBoardDTO dto,
+//										@RequestPart List<MultipartFile> files) {
+//		commandService.update(dto);
+//		GroupbuyingBoardDTO retiveBoard = queryService.retrieve(dto.getId());
+//		//todo: 이미지 업데이트
+//
+//		return retiveBoard;
+//	}
 
 	@PostMapping("${groupbuying.order-url}/{id}")
 	public GroupbuyingBoardDTO order(@PathVariable("id") Long id, HttpSession session) {

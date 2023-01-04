@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 
+import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.common.util.timestamp.BaseTime;
 import com.gophagi.nanugi.groupbuying.constant.Category;
 import com.gophagi.nanugi.groupbuying.constant.Status;
@@ -46,11 +47,14 @@ public class GroupbuyingBoard extends BaseTime {
 	@OneToMany(mappedBy = "groupbuyingBoard")
 	private List<Participant> participants;
 
+	@OneToMany(mappedBy = "groupbuyingBoard")
+	private List<Photo> photos;
+
 	@Builder
 	public GroupbuyingBoard(Long id, String title, Category category, Status status, Integer price,
 		String url, String deliveryAddress, String deliveryDetailAddress,
 		LocalDateTime expirationDate, Integer limitedNumberOfParticipants, String description,
-		Integer viewCount, List<Participant> participants) {
+		Integer viewCount, List<Participant> participants, List<Photo> photos) {
 		this.id = id;
 		this.title = title;
 		this.category = category;
@@ -64,6 +68,7 @@ public class GroupbuyingBoard extends BaseTime {
 		this.description = description;
 		this.viewCount = viewCount;
 		this.participants = participants;
+		this.photos = photos;
 	}
 
 	@PrePersist

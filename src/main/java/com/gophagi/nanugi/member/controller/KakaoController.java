@@ -43,6 +43,7 @@ public class KakaoController {
             model.addAttribute("LoginMember",LoginMember);
         }
 
+        log.info("session id:{}", session.getId());
         log.info("session.userId = {}", session.getAttribute("userId"));
         log.info("session.kakaoToken = {}", session.getAttribute("kakaoToken"));
         return "login success";

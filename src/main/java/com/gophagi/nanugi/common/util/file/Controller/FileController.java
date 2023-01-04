@@ -21,10 +21,10 @@ public class FileController {
 
         Long userId = 1L;
 
-        List<PhotoDTO> uploadItemsList  = fileService.saveFiles(userId, files);
-        fileService.deleteFiles(uploadItemsList);
+        //List<PhotoDTO> uploadItemsList  = fileService.saveFiles(userId, files);
+        //fileService.deleteFiles(uploadItemsList);
 
-        return uploadItemsList;
+        return null;
     }
 
 

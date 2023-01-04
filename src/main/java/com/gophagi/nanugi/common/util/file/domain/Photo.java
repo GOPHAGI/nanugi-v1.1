@@ -1,6 +1,7 @@
 package com.gophagi.nanugi.common.util.file.domain;
 
 import com.gophagi.nanugi.common.util.file.dto.PhotoDTO;
+import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,15 +20,18 @@ public class Photo {
     private String storeFileName;
     private String filetype;
     private String fileUrl;
+    @ManyToOne
+    private GroupbuyingBoard groupbuyingBoard;
 
     @Builder
-    public Photo(Long fileId, Long uploaderId, String uploadFileName, String storeFileName, String filetype, String fileUrl) {
+    public Photo(Long fileId, Long uploaderId, String uploadFileName, String storeFileName, String filetype, String fileUrl, GroupbuyingBoard groupbuyingBoard) {
         this.fileId = fileId;
         this.uploaderId = uploaderId;
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
         this.filetype = filetype;
-        this.fileUrl= fileUrl;
+        this.fileUrl = fileUrl;
+        this.groupbuyingBoard = groupbuyingBoard;
     }
 
     public static Photo toPhoto(PhotoDTO photoDTO){
@@ -38,6 +42,7 @@ public class Photo {
                 .storeFileName(photoDTO.getStoreFileName())
                 .uploadFileName(photoDTO.getUploadFileName())
                 .fileUrl(photoDTO.getFileUrl())
+                .groupbuyingBoard(photoDTO.getGroupbuyingBoard())
                 .build();
 
     }
