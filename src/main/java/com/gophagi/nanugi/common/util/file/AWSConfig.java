@@ -15,7 +15,7 @@ public class AWSConfig {
     private String iamAccessKey;
     @Value("${aws.s3.iamSecretKey}")
     private String iamSecretKey;
-    private String region = "ap-northeast-2"; // Bucket Region
+    private final String region = "ap-northeast-2"; // Bucket Region
 
     @Bean
     public AmazonS3Client amazonS3Client() {

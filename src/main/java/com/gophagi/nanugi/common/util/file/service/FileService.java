@@ -1,5 +1,6 @@
 package com.gophagi.nanugi.common.util.file.service;
 
+import com.gophagi.nanugi.common.util.file.FileUtil;
 import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.common.util.file.dto.PhotoDTO;
 import com.gophagi.nanugi.common.util.file.repository.FileRepository;
@@ -7,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +20,32 @@ import java.util.List;
 public class FileService {
 
     @Autowired
-   private final FileRepository fileRepository;
+    private final FileUtil fileUtil;
+    @Autowired
+    private final FileRepository fileRepository;
+
+    public List<PhotoDTO> saveFiles(Long userId, List<MultipartFile> files)  {
+        List<PhotoDTO> uploadItemsList = new ArrayList<>();
+
+        //List<MultipartFile>을 List<PhotoDTO>으로 변경하고 S3에 업로드
+        List<PhotoDTO> uploadItems = fileUtil.storeFiles(userId,files);
+
+        for (PhotoDTO uploadItem : uploadItems) {
+            uploadItemsList.add(saveFile(uploadItem));
+        }
+
+        return uploadItemsList;
+    }
+
+    public void deleteFiles(List<PhotoDTO> deleteItems) {
+
+        //s3에서 파일삭제
+        fileUtil.deleteFiles(deleteItems);
+
+        for (PhotoDTO deleteItem : deleteItems) {
+            deleteFile(deleteItem);
+        }
+    }
 
 
 
@@ -34,16 +62,6 @@ public class FileService {
 
     }
 
-    public List<PhotoDTO> saveFiles(List<PhotoDTO> uploadItems) {
-        List<PhotoDTO> uploadItemsList = new ArrayList<>();
-
-        for (PhotoDTO uploadItem : uploadItems) {
-            uploadItemsList.add( saveFile(uploadItem));
-        }
-
-        return uploadItemsList;
-    }
-
     /**
      * DB에서 사진 삭제
      * @param photoDTO
@@ -53,11 +71,6 @@ public class FileService {
         fileRepository.delete(Photo.toPhoto(photoDTO));
     }
 
-    public void deleteFiles(List<PhotoDTO> deleteItems) {
 
-        for (PhotoDTO deleteItem : deleteItems) {
-            deleteFile(deleteItem);
-        }
-    }
 
 }

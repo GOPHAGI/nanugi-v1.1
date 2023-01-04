@@ -18,9 +18,7 @@ public class Photo {
     private String uploadFileName;
     private String storeFileName;
     private String filetype;
-
     private String fileUrl;
-
 
     @Builder
     public Photo(Long fileId, Long uploaderId, String uploadFileName, String storeFileName, String filetype, String fileUrl) {
