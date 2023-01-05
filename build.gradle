@@ -38,6 +38,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation "org.springframework.cloud:spring-cloud-starter-openfeign:3.1.0" //feignClient
 	implementation "mysql:mysql-connector-java"
+	compileOnly 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' //s3
 	//implementation 'org.springframework.boot:spring-boot-starter-security'
 	//implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	//runtimeOnly 'com.h2database:h2'
