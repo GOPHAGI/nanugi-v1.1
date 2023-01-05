@@ -27,29 +27,20 @@ public class FileUtil {
     @Value("${file.dir}")
     private String fileDir;
 
-    private String S3Bucket = "nanugi-bucket"; // Bucket 이름
+    private final String S3Bucket = "nanugi-bucket"; // Bucket 이름
 
     @Autowired
     AmazonS3Client amazonS3Client;
-
-    /**
-     * 파일의 저장 경로를 가져오는 method
-     * @param fileName
-     * @return 파일경로
-     */
-    public String getFullPath(String fileName){
-        return fileDir +fileName;
-    }
 
     /**
      * List<MultipartFile>을 List<FileDTO>로 변환해서 반환하는 메소드
      * @param uploaderId
      * @param multipartFiles
      * @return List<FileDTO>
-     * @throws IOException
      */
-    public List<PhotoDTO> storeFiles (Long uploaderId, List<MultipartFile> multipartFiles) throws IOException {
+    public List<PhotoDTO> storeFiles (Long uploaderId, List<MultipartFile> multipartFiles)  {
         List<PhotoDTO> storeFileResult = new ArrayList<>();
+
         for (MultipartFile multipartFile : multipartFiles) {
             if(!multipartFile.isEmpty()){
                 storeFileResult.add(storeFile(uploaderId,multipartFile));
@@ -64,41 +55,46 @@ public class FileUtil {
      * @param uploaderId
      * @param multipartFile
      * @return FileDTO
-     * @throws IOException
      */
-    public PhotoDTO storeFile(Long uploaderId, MultipartFile multipartFile) throws IOException {
-        if(multipartFile.isEmpty()){
-            return null;
+    public PhotoDTO storeFile(Long uploaderId, MultipartFile multipartFile)  {
+        if( multipartFile.isEmpty()){
+            throw new NullPointerException("multipartFile is empty");
         }
-
-        String originalFileName = multipartFile.getOriginalFilename();
-        String storefileName = createStoreFileName(originalFileName);
-        String type = multipartFile.getContentType();
-        long size = multipartFile.getSize(); // 파일 크기
-
-        //s3에 업로드
-        ObjectMetadata objectMetaData = new ObjectMetadata();
-        objectMetaData.setContentType(multipartFile.getContentType());
-        objectMetaData.setContentLength(size);
-
-        // S3에 업로드
-        amazonS3Client.putObject(
-                new PutObjectRequest(S3Bucket, storefileName, multipartFile.getInputStream(), objectMetaData)
-                        .withCannedAcl(CannedAccessControlList.PublicRead)
-        );
-
-        String imagePath = amazonS3Client.getUrl(S3Bucket, storefileName).toString(); // 접근가능한 URL 가져오기
-
-
         //FileDTO 생성
         PhotoDTO file = new PhotoDTO();
-        file.setUploaderId(uploaderId);
-        file.setStoreFileName(storefileName);
-        file.setUploadFileName(originalFileName);
-        file.setFiletype(type);
-        file.setFileUrl(imagePath);
 
-        log.info("FileUtil storeFile : {}" ,file);
+        try{
+
+            String originalFileName = multipartFile.getOriginalFilename();
+            String storefileName = createStoreFileName(originalFileName);
+            String type = multipartFile.getContentType();
+            long size = multipartFile.getSize(); // 파일 크기
+
+            //s3에 업로드
+            ObjectMetadata objectMetaData = new ObjectMetadata();
+            objectMetaData.setContentType(multipartFile.getContentType());
+            objectMetaData.setContentLength(size);
+
+            // S3에 업로드
+            amazonS3Client.putObject(
+                    new PutObjectRequest(S3Bucket, storefileName, multipartFile.getInputStream(), objectMetaData)
+                            .withCannedAcl(CannedAccessControlList.PublicRead)
+            );
+
+            String imagePath = amazonS3Client.getUrl(S3Bucket, storefileName).toString(); // 접근가능한 URL 가져오기
+
+            file.setUploaderId(uploaderId);
+            file.setStoreFileName(storefileName);
+            file.setUploadFileName(originalFileName);
+            file.setFiletype(type);
+            file.setFileUrl(imagePath);
+            log.info("FileUtil storeFile : {}" ,file);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
         return file;
     }
 
@@ -111,7 +107,7 @@ public class FileUtil {
      */
     private String createStoreFileName(String originalFileName) {
         LocalDateTime dateTime = LocalDateTime.now();
-        String timeFormat = dateTime.format(DateTimeFormatter.ofPattern("YYMMddHHmmssSSS"));
+        String timeFormat = dateTime.format(DateTimeFormatter.ofPattern("yyMMddHHmmssSSS"));
         String ext = extracted(originalFileName);
         return timeFormat +"."+ext;
     }
