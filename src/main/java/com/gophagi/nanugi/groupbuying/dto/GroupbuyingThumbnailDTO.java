@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.gophagi.nanugi.common.util.area.Areas;
+import com.gophagi.nanugi.common.util.file.dto.PhotoDTO;
 import com.gophagi.nanugi.groupbuying.constant.Category;
 import com.gophagi.nanugi.groupbuying.constant.Status;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
@@ -19,60 +19,57 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class GroupbuyingBoardDTO {
+public class GroupbuyingThumbnailDTO {
 	private Long id;
+	private PhotoDTO photo;
 	private String title;
 	private Category category;
 	private Status status;
 	private Integer price;
-	private String url;
-	private Areas deliveryArea;
 	private String deliveryAddress;
 	private String deliveryDetailAddress;
 	private LocalDateTime expirationDate;
-	private Integer limitedNumberOfParticipants;
-	private String description;
-	private Integer viewCount;
+	private int limitedNumberOfParticipants;
+	private int numberOfParticipants;
 
 	@Builder
-	public GroupbuyingBoardDTO(Long id, String title, Category category, Status status, Integer price, String url,
-		Areas deliveryArea, String deliveryAddress, String deliveryDetailAddress, LocalDateTime expirationDate,
-		Integer limitedNumberOfParticipants, String description, Integer viewCount) {
+	public GroupbuyingThumbnailDTO(Long id, PhotoDTO photo, String title, Category category, Status status,
+		Integer price,
+		String deliveryAddress, String deliveryDetailAddress, LocalDateTime expirationDate,
+		int limitedNumberOfParticipants,
+		int numberOfParticipants) {
 		this.id = id;
+		this.photo = photo;
 		this.title = title;
 		this.category = category;
 		this.status = status;
 		this.price = price;
-		this.url = url;
-		this.deliveryArea = deliveryArea;
 		this.deliveryAddress = deliveryAddress;
 		this.deliveryDetailAddress = deliveryDetailAddress;
 		this.expirationDate = expirationDate;
 		this.limitedNumberOfParticipants = limitedNumberOfParticipants;
-		this.description = description;
-		this.viewCount = viewCount;
+		this.numberOfParticipants = numberOfParticipants;
 	}
 
-	public static GroupbuyingBoardDTO toGroupbuyingBoardDTO(GroupbuyingBoard groupbuyingBoard) {
-		return GroupbuyingBoardDTO.builder()
+	public static GroupbuyingThumbnailDTO toGroupbuyingThumbnailDTO(GroupbuyingBoard groupbuyingBoard) {
+		return GroupbuyingThumbnailDTO.builder()
 			.id(groupbuyingBoard.getId())
+			.photo(PhotoDTO.toPhotoDTO(groupbuyingBoard.getPhotos().get(0)))
 			.title(groupbuyingBoard.getTitle())
 			.category(groupbuyingBoard.getCategory())
 			.status(groupbuyingBoard.getStatus())
 			.price(groupbuyingBoard.getPrice())
-			.url(groupbuyingBoard.getUrl())
 			.deliveryAddress(groupbuyingBoard.getDeliveryAddress())
 			.deliveryDetailAddress(groupbuyingBoard.getDeliveryDetailAddress())
 			.expirationDate(groupbuyingBoard.getExpirationDate())
 			.limitedNumberOfParticipants(groupbuyingBoard.getLimitedNumberOfParticipants())
-			.description(groupbuyingBoard.getDescription())
-			.viewCount(groupbuyingBoard.getViewCount())
+			.numberOfParticipants(groupbuyingBoard.getParticipants().size())
 			.build();
 	}
 
-	public static List<GroupbuyingBoardDTO> toGroupbuyingBoardDTOs(List<GroupbuyingBoard> groupbuyingBoards) {
+	public static List<GroupbuyingThumbnailDTO> toGroupbuyingThumbnailDTOs(List<GroupbuyingBoard> groupbuyingBoards) {
 		return groupbuyingBoards.stream()
-			.map(GroupbuyingBoardDTO::toGroupbuyingBoardDTO)
+			.map(GroupbuyingThumbnailDTO::toGroupbuyingThumbnailDTO)
 			.collect(Collectors.toList());
 	}
 

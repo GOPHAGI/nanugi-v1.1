@@ -82,7 +82,7 @@ public class GroupbuyingBoardCommandService {
 					participantService.delete(participantId);
 					break;
 				case PROMOTER:
-					tryDeleteAsPromoter(participantId, boardId, participants);
+					tryDeleteAsPromoter(boardId, participants);
 					break;
 			}
 		}
@@ -92,7 +92,7 @@ public class GroupbuyingBoardCommandService {
 		repository.deleteById(id);
 	}
 
-	private void tryDeleteAsPromoter(Long participantId, Long boardId, List<ParticipantDTO> participants) {
+	private void tryDeleteAsPromoter(Long boardId, List<ParticipantDTO> participants) {
 		if (participants.size() > 1) {
 			throw new CannotDeleteBoardException();
 		}
