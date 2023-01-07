@@ -5,7 +5,9 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.gophagi.nanugi.common.util.file.service.FileService;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
 import com.gophagi.nanugi.groupbuying.dto.ParticipantDTO;
@@ -19,26 +21,28 @@ import com.gophagi.nanugi.groupbuying.repository.GroupbuyingBoardRepository;
 public class GroupbuyingBoardCommandService {
 	private final GroupbuyingBoardRepository repository;
 	private final ParticipantService participantService;
+	private final FileService fileService;
 
 	public GroupbuyingBoardCommandService(GroupbuyingBoardRepository repository,
-		ParticipantService participantService) {
+		ParticipantService participantService, FileService fileService) {
 		this.repository = repository;
 		this.participantService = participantService;
+		this.fileService = fileService;
 	}
 
 	@Transactional
-	public Long create(GroupbuyingBoardDTO dto, Long userId) {
+	public void create(GroupbuyingBoardDTO dto, List<MultipartFile> files, Long userId) {
 		if (Objects.isNull(dto)) {
 			throw new NullPointerException("dto is empty");
 		}
 		try {
 			GroupbuyingBoard groupbuyingBoard = GroupbuyingBoard.toGroupbuyingBoard(dto);
 
-			Long boardId = repository.save(groupbuyingBoard).getId();
+			repository.save(groupbuyingBoard);
 
 			participantService.createAsPromoter(userId, groupbuyingBoard);
 
-			return boardId;
+			fileService.saveFiles(userId, groupbuyingBoard, files);
 
 		} catch (Exception exception) {
 			throw new InvalidGroupbuyingBoardInstanceException();
