@@ -15,6 +15,7 @@ public class Photo {
     @Column(name = "FILE_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fileId;
+    private Long fileIndex;
     private Long uploaderId;
     private String uploadFileName;
     private String storeFileName;
@@ -24,8 +25,11 @@ public class Photo {
     private GroupbuyingBoard groupbuyingBoard;
 
     @Builder
-    public Photo(Long fileId, Long uploaderId, String uploadFileName, String storeFileName, String filetype, String fileUrl, GroupbuyingBoard groupbuyingBoard) {
+    public Photo(Long fileId, Long fileIndex, Long uploaderId,
+                 String uploadFileName, String storeFileName,
+                 String filetype, String fileUrl, GroupbuyingBoard groupbuyingBoard) {
         this.fileId = fileId;
+        this.fileIndex = fileIndex;
         this.uploaderId = uploaderId;
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
@@ -37,6 +41,7 @@ public class Photo {
     public static Photo toPhoto(PhotoDTO photoDTO){
         return Photo.builder()
                 .fileId(photoDTO.getFileId())
+                .fileIndex(photoDTO.getFileIndex())
                 .filetype(photoDTO.getFiletype())
                 .uploaderId(photoDTO.getUploaderId())
                 .storeFileName(photoDTO.getStoreFileName())

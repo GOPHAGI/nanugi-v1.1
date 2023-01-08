@@ -9,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,6 +19,7 @@ import javax.persistence.Id;
 public class PhotoDTO {
 
     private Long fileId;
+    private Long fileIndex;
     private Long uploaderId;
     private String uploadFileName;
     private String storeFileName;
@@ -25,8 +28,11 @@ public class PhotoDTO {
     private GroupbuyingBoard groupbuyingBoard;
 
     @Builder
-    public PhotoDTO(Long fileId, Long uploaderId, String uploadFileName, String storeFileName, String filetype, String fileUrl, GroupbuyingBoard groupbuyingBoard) {
+    public PhotoDTO(Long fileId, Long fileIndex, Long uploaderId,
+                    String uploadFileName, String storeFileName,
+                    String filetype, String fileUrl, GroupbuyingBoard groupbuyingBoard) {
         this.fileId = fileId;
+        this.fileIndex = fileIndex;
         this.uploaderId = uploaderId;
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
@@ -38,12 +44,29 @@ public class PhotoDTO {
     public static PhotoDTO toPhotoDTO(Photo photo){
         return PhotoDTO.builder()
                 .fileId(photo.getFileId())
+                .fileIndex(photo.getFileIndex())
                 .filetype(photo.getFiletype())
                 .storeFileName(photo.getStoreFileName())
                 .uploadFileName(photo.getUploadFileName())
                 .uploaderId(photo.getUploaderId())
                 .fileUrl(photo.getFileUrl())
                 .build();
+    }
+
+    public static List<PhotoDTO> toPhotoDTOs(List<Photo> photos){
+        List<PhotoDTO> photoDTOs  = new ArrayList<>();
+        for (Photo photo : photos) {
+            photoDTOs.add(PhotoDTO.builder()
+                        .fileId(photo.getFileId())
+                        .fileIndex(photo.getFileIndex())
+                        .filetype(photo.getFiletype())
+                        .storeFileName(photo.getStoreFileName())
+                        .uploadFileName(photo.getUploadFileName())
+                        .uploaderId(photo.getUploaderId())
+                        .fileUrl(photo.getFileUrl())
+                        .build());
+        }
+        return photoDTOs;
     }
 
 }
