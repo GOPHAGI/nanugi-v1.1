@@ -39,14 +39,14 @@ public class FileService {
         return uploadItemsList;
     }
 
-    public void deleteFiles(List<PhotoDTO> deleteFiles) {
+    public void deleteFiles(List<PhotoDTO> deletePhotoList) {
 
         //s3에서 파일삭제
-        fileUtil.deleteFiles(deleteFiles);
+        fileUtil.deleteFiles(deletePhotoList);
 
         //DB에서 파일삭제
-        for (PhotoDTO deleteFile : deleteFiles) {
-            deleteFile(deleteFile);
+        for (PhotoDTO deletePhoto : deletePhotoList) {
+            deleteFile(deletePhoto);
         }
     }
 
@@ -62,10 +62,17 @@ public class FileService {
 
         GroupbuyingBoard groupbuyingBoard = GroupbuyingBoard.toGroupbuyingBoard(groupbuyingBoardDTO);
         uploadItem.setGroupbuyingBoard(groupbuyingBoard);
+
+        Long idx = getPhotoLastIndex(groupbuyingBoardDTO);
+        uploadItem.setFileIndex(idx);
         PhotoDTO saveFileDTO = PhotoDTO.toPhotoDTO(fileRepository.save(Photo.toPhoto(uploadItem)));
         log.info("FileService saveFile : {}", saveFileDTO);
         return saveFileDTO;
 
+    }
+
+    private Long getPhotoLastIndex(GroupbuyingBoardDTO groupbuyingBoardDTO) {
+        return  fileRepository.findLastIndexByGroupbuyingBoardId(groupbuyingBoardDTO.getId());
     }
 
     /**
@@ -77,12 +84,26 @@ public class FileService {
         fileRepository.delete(Photo.toPhoto(photoDTO));
     }
 
-    public List<PhotoDTO> updateFiles(GroupbuyingBoardDTO retiveBoard, List<MultipartFile> files, List<PhotoDTO> deletefiles , Long userId) {
+    public List<PhotoDTO> updateFiles(GroupbuyingBoardDTO retiveBoard, List<MultipartFile> files, List<Long> deletePhotoIdList , Long userId) {
 
-        ////새로 업로드한 이미지가 있으면 저장하고 삭제한 이미지는 db랑 s3에서 지우기
-        deleteFiles(deletefiles);
-        saveFiles(userId ,retiveBoard,files);
+        log.info("deletePhotoIdList : {}",deletePhotoIdList);
+        //id 리스트로 photoDto 리스트 받아오기
+        // 삭제한 이미지는 db랑 s3에서 지우기
+        if(deletePhotoIdList != null){
+            List<PhotoDTO> deletePhotoList = findAllById(deletePhotoIdList);
+            deleteFiles(deletePhotoList);
+        }
+
+
+        //새로 업로드한 이미지가 있으면 저장하기
+        if(files != null){
+            saveFiles(userId ,retiveBoard,files);
+        }
 
         return  null;
+    }
+
+    public List<PhotoDTO> findAllById(List<Long> deletePhotoIdList){
+        return  PhotoDTO.toPhotoDTOs(fileRepository.findAllById(deletePhotoIdList));
     }
 }

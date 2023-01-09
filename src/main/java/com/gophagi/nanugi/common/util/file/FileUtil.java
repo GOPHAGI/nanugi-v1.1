@@ -128,12 +128,12 @@ public class FileUtil {
 
     /**
      * S3에 올린 파일들 삭제
-     * @param deleteItemsList
+     * @param
      */
-    public void deleteFiles(List<PhotoDTO> deleteItemsList) {
-        for (PhotoDTO deleteItem : deleteItemsList) {
-            if(deleteItem != null){
-                deleteFile(deleteItem);
+    public void deleteFiles(List<PhotoDTO> deletePhotoList) {
+        for (PhotoDTO deletePhoto : deletePhotoList) {
+            if(deletePhoto != null){
+                deleteFile(deletePhoto);
             }
         }
     }
