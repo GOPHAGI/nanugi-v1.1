@@ -3,6 +3,7 @@ package com.gophagi.nanugi.groupbuying;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
@@ -39,13 +41,15 @@ public class GroupbuyingBoardCommandServiceTests {
 
 	@Test
 	void 공동구매_매개변수가_null_일_때() {
-		assertThatThrownBy(() -> service.create(null, 1L)).isInstanceOf(NullPointerException.class);
+		List<MultipartFile> files = new ArrayList<>();
+		assertThatThrownBy(() -> service.create(null, files, 1L)).isInstanceOf(NullPointerException.class);
 	}
 
 	@Test
 	void 공동구매보드_insert_실패() {
+		List<MultipartFile> files = new ArrayList<>();
 		when(repository.save(ArgumentMatchers.any())).thenThrow(new RuntimeException());
-		assertThatThrownBy(() -> service.create(new GroupbuyingBoardDTO(), 1L)).isInstanceOf(
+		assertThatThrownBy(() -> service.create(new GroupbuyingBoardDTO(), files, 1L)).isInstanceOf(
 			InvalidGroupbuyingBoardInstanceException.class);
 	}
 

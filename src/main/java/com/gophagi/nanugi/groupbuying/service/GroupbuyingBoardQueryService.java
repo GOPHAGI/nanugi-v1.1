@@ -3,12 +3,17 @@ package com.gophagi.nanugi.groupbuying.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gophagi.nanugi.groupbuying.constant.Category;
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
+import com.gophagi.nanugi.groupbuying.dto.GroupbuyingThumbnailDTO;
 import com.gophagi.nanugi.groupbuying.dto.ParticipantDTO;
 import com.gophagi.nanugi.groupbuying.exception.InvalidGroupbuyingBoardInstanceException;
 import com.gophagi.nanugi.groupbuying.repository.GroupbuyingBoardRepository;
@@ -50,5 +55,23 @@ public class GroupbuyingBoardQueryService {
 			groupbuyingBoards.add(GroupbuyingBoardDTO.toGroupbuyingBoardDTO(dto.getGroupbuyingBoard()));
 		}
 		return groupbuyingBoards;
+	}
+
+	@Transactional
+	public Page<GroupbuyingThumbnailDTO> retrieveList(int page) {
+		PageRequest pageRequest = PageRequest.of(page, 20);
+		Page<GroupbuyingBoard> groupbuyingBoards = repository.findAll(pageRequest);
+		return new PageImpl<>(
+			GroupbuyingThumbnailDTO.toGroupbuyingThumbnailDTOs(groupbuyingBoards.getContent()),
+			pageRequest, groupbuyingBoards.getTotalElements());
+	}
+
+	@Transactional
+	public Page<GroupbuyingThumbnailDTO> retrieveCategoryList(Category category, int page) {
+		PageRequest pageRequest = PageRequest.of(page, 20);
+		Page<GroupbuyingBoard> groupbuyingBoards = repository.findByCategory(category, pageRequest);
+		return new PageImpl<>(
+			GroupbuyingThumbnailDTO.toGroupbuyingThumbnailDTOs(groupbuyingBoards.getContent()),
+			pageRequest, groupbuyingBoards.getTotalElements());
 	}
 }
