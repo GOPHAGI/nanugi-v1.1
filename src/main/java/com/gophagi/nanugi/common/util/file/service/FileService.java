@@ -73,13 +73,25 @@ public class FileService {
         fileRepository.delete(Photo.toPhoto(photoDTO));
     }
 
-	public List<PhotoDTO> updateFiles(GroupbuyingBoard retiveBoard, List<MultipartFile> files,
-		List<PhotoDTO> deletefiles, Long userId) {
+	public List<PhotoDTO> updateFiles(GroupbuyingBoardDTO groupbuyingBoardDTO, List<MultipartFile> files, List<Long> deletePhotoIdList , Long userId) {
 
-		////새로 업로드한 이미지가 있으면 저장하고 삭제한 이미지는 db랑 s3에서 지우기
-		deleteFiles(deletefiles);
-		saveFiles(userId, retiveBoard, files);
+		log.info("deletePhotoIdList : {}",deletePhotoIdList);
+		//id 리스트로 photoDto 리스트 받아오기
+		// 삭제한 이미지는 db랑 s3에서 지우기
+		if(deletePhotoIdList != null){
+			List<PhotoDTO> deletePhotoList = findAllById(deletePhotoIdList);
+			deleteFiles(deletePhotoList);
+		}
 
-		return null;
+		//새로 업로드한 이미지가 있으면 저장하기
+		if(files != null){
+			saveFiles(userId , GroupbuyingBoard.toGroupbuyingBoard(groupbuyingBoardDTO),files);
+		}
+
+		return  null;
 	}
+	public List<PhotoDTO> findAllById(List<Long> deletePhotoIdList){
+		return  PhotoDTO.toPhotoDTOs(fileRepository.findAllById(deletePhotoIdList));
+	}
+
 }
