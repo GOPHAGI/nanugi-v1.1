@@ -14,8 +14,13 @@ public enum ErrorCode {
     METHOD_NOT_ALLOWED(405, "COMMON-ERR-405", " Invalid Input Value"),
     INTER_SERVER_ERROR(500,"COMMON-ERR-500","INTER SERVER ERROR"),
 
+
     //Member
-    MEMBER_DUPLICATION(400,"MEMBER-ERR-400","MEMBER DUPLICATED");
+    MEMBER_DUPLICATION(400,"MEMBER-ERR-400","MEMBER DUPLICATED"),
+    CODE_NOT_FOUND(400, "KAKAO-ERR-400", "authorization code not found"),
+    INVALID_TOKEN(401, "KAKAO-ERR-401", "this access token does not exist")
+
+    ;
 
 
     private int status;
