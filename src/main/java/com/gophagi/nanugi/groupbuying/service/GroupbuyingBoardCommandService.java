@@ -16,6 +16,7 @@ import com.gophagi.nanugi.groupbuying.exception.DuplicateParticipationException;
 import com.gophagi.nanugi.groupbuying.exception.InvalidGroupbuyingBoardInstanceException;
 import com.gophagi.nanugi.groupbuying.exception.PersonnelLimitExceededException;
 import com.gophagi.nanugi.groupbuying.repository.GroupbuyingBoardRepository;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class GroupbuyingBoardCommandService {
@@ -50,13 +51,15 @@ public class GroupbuyingBoardCommandService {
 	}
 
 	@Transactional
-	public void update(GroupbuyingBoardDTO dto) {
+	public void update(GroupbuyingBoardDTO dto, List<MultipartFile> files, List<Long> deletePhotoIdList, Long userId) {
 		if (Objects.isNull(dto)) {
 			throw new NullPointerException("dto is empty");
 		}
 		GroupbuyingBoard groupbuyingBoard = repository.findById(dto.getId())
 			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException());
 		groupbuyingBoard.update(dto);
+
+		fileService.updateFiles(dto, files, deletePhotoIdList, userId);
 	}
 
 	@Transactional
