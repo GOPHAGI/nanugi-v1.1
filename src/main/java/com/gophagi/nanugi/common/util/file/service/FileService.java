@@ -50,7 +50,6 @@ public class FileService {
 	 * DB에 파일 정보 저장
 	 *
 	 * @param uploadItem
-	 * @return PhotoDTO
 	 */
 	private void saveFile(PhotoDTO uploadItem, GroupbuyingBoard groupbuyingBoard) {
 		uploadItem.setGroupbuyingBoard(groupbuyingBoard);
@@ -73,7 +72,7 @@ public class FileService {
         fileRepository.delete(Photo.toPhoto(photoDTO));
     }
 
-	public List<PhotoDTO> updateFiles(GroupbuyingBoardDTO groupbuyingBoardDTO, List<MultipartFile> files, List<Long> deletePhotoIdList , Long userId) {
+	public void updateFiles(GroupbuyingBoardDTO groupbuyingBoardDTO, List<MultipartFile> files, List<Long> deletePhotoIdList , Long userId) {
 
 		log.info("deletePhotoIdList : {}",deletePhotoIdList);
 		//id 리스트로 photoDto 리스트 받아오기
@@ -88,7 +87,6 @@ public class FileService {
 			saveFiles(userId , GroupbuyingBoard.toGroupbuyingBoard(groupbuyingBoardDTO),files);
 		}
 
-		return  null;
 	}
 	public List<PhotoDTO> findAllById(List<Long> deletePhotoIdList){
 		return  PhotoDTO.toPhotoDTOs(fileRepository.findAllById(deletePhotoIdList));
