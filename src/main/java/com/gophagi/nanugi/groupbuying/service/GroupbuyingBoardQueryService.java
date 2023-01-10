@@ -41,7 +41,7 @@ public class GroupbuyingBoardQueryService {
 
 		List<GroupbuyingBoardDTO> groupbuyingBoards = new ArrayList<>();
 		for (ParticipantDTO dto : participants) {
-			groupbuyingBoards.add(GroupbuyingBoardDTO.toGroupbuyingBoardDTO(dto.getGroupbuyingBoard()));
+			groupbuyingBoards.add(dto.getGroupbuyingBoard());
 		}
 		return groupbuyingBoards;
 	}
@@ -52,7 +52,7 @@ public class GroupbuyingBoardQueryService {
 
 		List<GroupbuyingBoardDTO> groupbuyingBoards = new ArrayList<>();
 		for (ParticipantDTO dto : participants) {
-			groupbuyingBoards.add(GroupbuyingBoardDTO.toGroupbuyingBoardDTO(dto.getGroupbuyingBoard()));
+			groupbuyingBoards.add(dto.getGroupbuyingBoard());
 		}
 		return groupbuyingBoards;
 	}
