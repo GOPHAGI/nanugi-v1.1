@@ -73,6 +73,7 @@ public class GroupbuyingController {
 
 	@GetMapping("${groupbuying.retrieve-url}/{id}")
 	public GroupbuyingBoardDTO retrieve(@PathVariable("id") Long id) {
+		commandService.updateView(id);
 		return queryService.retrieve(id);
 	}
 

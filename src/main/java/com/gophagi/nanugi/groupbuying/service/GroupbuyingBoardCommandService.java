@@ -106,4 +106,9 @@ public class GroupbuyingBoardCommandService {
 	private boolean isUser(ParticipantDTO participant, Long userId) {
 		return participant.getMember().getId().equals(userId);
 	}
+
+	@Transactional
+	public void updateView(Long boardId) {
+		repository.updateView(boardId);
+	}
 }
