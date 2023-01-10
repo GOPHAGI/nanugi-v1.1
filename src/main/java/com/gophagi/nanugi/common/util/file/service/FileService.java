@@ -20,59 +20,48 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileService {
 
-    @Autowired
-    private final FileUtil fileUtil;
-    @Autowired
-    private final FileRepository fileRepository;
+	@Autowired
+	private final FileUtil fileUtil;
+	@Autowired
+	private final FileRepository fileRepository;
 
-    public List<PhotoDTO> saveFiles(Long userId, GroupbuyingBoardDTO groupbuyingBoardDTO, List<MultipartFile> files)  {
-        List<PhotoDTO> uploadItemsList = new ArrayList<>();
+	public void saveFiles(Long userId, GroupbuyingBoard groupbuyingBoard, List<MultipartFile> files) {
+		//List<MultipartFile>을 List<PhotoDTO>으로 변경하고 S3에 업로드
+		List<PhotoDTO> uploadItems = fileUtil.storeFiles(userId, files);
 
-        //List<MultipartFile>을 List<PhotoDTO>으로 변경하고 S3에 업로드
-        List<PhotoDTO> uploadItems = fileUtil.storeFiles(userId,files);
+		//DB에 파일 정보 저장
+		for (PhotoDTO uploadItem : uploadItems) {
+			saveFile(uploadItem, groupbuyingBoard);
+		}
+	}
 
-        //DB에 파일 정보 저장
-        for (PhotoDTO uploadItem : uploadItems) {
-            uploadItemsList.add(saveFile(uploadItem,groupbuyingBoardDTO));
-        }
-
-        return uploadItemsList;
-    }
-
-    public void deleteFiles(List<PhotoDTO> deletePhotoList) {
+    public void deleteFiles(List<PhotoDTO> deleteFiles) {
 
         //s3에서 파일삭제
-        fileUtil.deleteFiles(deletePhotoList);
+        fileUtil.deleteFiles(deleteFiles);
 
         //DB에서 파일삭제
-        for (PhotoDTO deletePhoto : deletePhotoList) {
-            deleteFile(deletePhoto);
+        for (PhotoDTO deleteFile : deleteFiles) {
+            deleteFile(deleteFile);
         }
     }
 
-
-
-    /**
-     * DB에 파일 정보 저장
-     *
-     * @param uploadItem
-     * @return PhotoDTO
-     */
-    private PhotoDTO saveFile(PhotoDTO uploadItem, GroupbuyingBoardDTO groupbuyingBoardDTO) {
-
-        GroupbuyingBoard groupbuyingBoard = GroupbuyingBoard.toGroupbuyingBoard(groupbuyingBoardDTO);
-        uploadItem.setGroupbuyingBoard(groupbuyingBoard);
-
-        Long idx = getPhotoLastIndex(groupbuyingBoardDTO);
+	/**
+	 * DB에 파일 정보 저장
+	 *
+	 * @param uploadItem
+	 * @return PhotoDTO
+	 */
+	private void saveFile(PhotoDTO uploadItem, GroupbuyingBoard groupbuyingBoard) {
+		uploadItem.setGroupbuyingBoard(groupbuyingBoard);
+        Long idx = getPhotoLastIndex(groupbuyingBoard);
         uploadItem.setFileIndex(idx);
         PhotoDTO saveFileDTO = PhotoDTO.toPhotoDTO(fileRepository.save(Photo.toPhoto(uploadItem)));
-        log.info("FileService saveFile : {}", saveFileDTO);
-        return saveFileDTO;
+		log.info("FileService saveFile : {}", saveFileDTO);
+	}
 
-    }
-
-    private Long getPhotoLastIndex(GroupbuyingBoardDTO groupbuyingBoardDTO) {
-        return  fileRepository.findLastIndexByGroupbuyingBoardId(groupbuyingBoardDTO.getId());
+    private Long getPhotoLastIndex(GroupbuyingBoard groupbuyingBoard) {
+        return  fileRepository.findLastIndexByGroupbuyingBoardId(groupbuyingBoard.getId());
     }
 
     /**
@@ -84,26 +73,13 @@ public class FileService {
         fileRepository.delete(Photo.toPhoto(photoDTO));
     }
 
-    public List<PhotoDTO> updateFiles(GroupbuyingBoardDTO retiveBoard, List<MultipartFile> files, List<Long> deletePhotoIdList , Long userId) {
+	public List<PhotoDTO> updateFiles(GroupbuyingBoard retiveBoard, List<MultipartFile> files,
+		List<PhotoDTO> deletefiles, Long userId) {
 
-        log.info("deletePhotoIdList : {}",deletePhotoIdList);
-        //id 리스트로 photoDto 리스트 받아오기
-        // 삭제한 이미지는 db랑 s3에서 지우기
-        if(deletePhotoIdList != null){
-            List<PhotoDTO> deletePhotoList = findAllById(deletePhotoIdList);
-            deleteFiles(deletePhotoList);
-        }
+		////새로 업로드한 이미지가 있으면 저장하고 삭제한 이미지는 db랑 s3에서 지우기
+		deleteFiles(deletefiles);
+		saveFiles(userId, retiveBoard, files);
 
-
-        //새로 업로드한 이미지가 있으면 저장하기
-        if(files != null){
-            saveFiles(userId ,retiveBoard,files);
-        }
-
-        return  null;
-    }
-
-    public List<PhotoDTO> findAllById(List<Long> deletePhotoIdList){
-        return  PhotoDTO.toPhotoDTOs(fileRepository.findAllById(deletePhotoIdList));
-    }
+		return null;
+	}
 }

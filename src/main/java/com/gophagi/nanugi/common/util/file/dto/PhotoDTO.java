@@ -1,16 +1,16 @@
 package com.gophagi.nanugi.common.util.file.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
-import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
-import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -53,20 +53,10 @@ public class PhotoDTO {
                 .build();
     }
 
-    public static List<PhotoDTO> toPhotoDTOs(List<Photo> photos){
-        List<PhotoDTO> photoDTOs  = new ArrayList<>();
-        for (Photo photo : photos) {
-            photoDTOs.add(PhotoDTO.builder()
-                        .fileId(photo.getFileId())
-                        .fileIndex(photo.getFileIndex())
-                        .filetype(photo.getFiletype())
-                        .storeFileName(photo.getStoreFileName())
-                        .uploadFileName(photo.getUploadFileName())
-                        .uploaderId(photo.getUploaderId())
-                        .fileUrl(photo.getFileUrl())
-                        .build());
-        }
-        return photoDTOs;
-    }
+	public static List<PhotoDTO> toPhotoDTOs(List<Photo> photos) {
+		return photos.stream()
+			.map(PhotoDTO::toPhotoDTO)
+			.collect(Collectors.toList());
+	}
 
 }
