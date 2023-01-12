@@ -1,8 +1,10 @@
 package com.gophagi.nanugi.member.service;
 
+import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.member.domain.Member;
 import com.gophagi.nanugi.member.dto.KakaoInfo;
 import com.gophagi.nanugi.member.dto.MemberDTO;
+import com.gophagi.nanugi.member.exception.DuplicateMemberExcepion;
 import com.gophagi.nanugi.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ public class MemberService {
      */
     public MemberDTO getMemberByKakao (KakaoInfo kakaoInfo) {
         //정보 저장 되어있는지 확인
+
         Long kakaoid = kakaoInfo.getId();
         log.info("kakaoid = {}", kakaoid);
         Member member = memberRepository.findByKakaoid(kakaoid);
@@ -57,6 +60,13 @@ public class MemberService {
      * @param kakaoid
      */
     private MemberDTO saveMember(KakaoInfo kakaoInfo, Long kakaoid) {
+
+        Member member = memberRepository.findByKakaoid(kakaoid);
+        if(member != null){
+            //이미 저장 되어 있을 경우 excepion발생
+            throw new DuplicateMemberExcepion();
+        }
+
         MemberDTO newMember = new MemberDTO();
         newMember.setKakaoid(kakaoid);
         newMember.setNickname(kakaoInfo.getKakaoAccount().getProfile().getNickname());

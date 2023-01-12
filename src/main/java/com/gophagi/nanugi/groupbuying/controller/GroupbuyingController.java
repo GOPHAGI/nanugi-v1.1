@@ -1,7 +1,5 @@
 package com.gophagi.nanugi.groupbuying.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpSession;
 
 import org.springframework.data.domain.Page;
@@ -21,6 +19,8 @@ import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardCommandService;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardQueryService;
 
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -43,21 +43,21 @@ public class GroupbuyingController {
 		commandService.create(dto, files, userId);
 	}
 
-	@PostMapping("${groupbuying.update-url}")
-	public void update(@RequestBody GroupbuyingBoardDTO dto) {
-		commandService.update(dto);
-	}
+	//@PostMapping("${groupbuying.update-url}")
+//	public void update(@RequestBody GroupbuyingBoardDTO dto) {
+//		commandService.update(dto);
+//	}
 
-	//@PostMapping(value ="${groupbuying.update-url}",
-	//			 consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-	//	public GroupbuyingBoardDTO updateV2(@RequestPart GroupbuyingBoardDTO dto,
-	//										@RequestPart List<MultipartFile> files) {
-	//		commandService.update(dto);
-	//		GroupbuyingBoardDTO retiveBoard = queryService.retrieve(dto.getId());
-	//		//todo: 이미지 업데이트
-	//
-	//		return retiveBoard;
-	//	}
+	@PostMapping(value ="${groupbuying.update-url}",
+				 consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+	public void updateV2(@RequestPart GroupbuyingBoardDTO dto,
+										@RequestPart(required = false) List<MultipartFile> files,
+										@RequestPart(required = false) List<Long> deletePhotoIdList,
+										HttpSession session) {
+		Long userId = (Long) session.getAttribute("id");
+		commandService.update(dto, files,deletePhotoIdList, userId);
+
+	}
 
 	@PostMapping("${groupbuying.order-url}/{id}")
 	public void order(@PathVariable("id") Long id, HttpSession session) {

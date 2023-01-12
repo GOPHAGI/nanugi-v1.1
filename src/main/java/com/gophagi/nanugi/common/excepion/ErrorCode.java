@@ -14,8 +14,10 @@ public enum ErrorCode {
 	METHOD_NOT_ALLOWED(405, "405 Method Not Allowed", "허용하지 않는 요청 Method 입니다."),
 	INTER_SERVER_ERROR(500, "500 Internal Server Error", "INTER SERVER ERROR"),
 
-	//Member
-	MEMBER_DUPLICATION(500, "500 MEMBER DUPLICATION", "이미 존재하는 회원정보입니다."),
+    //Member
+    MEMBER_DUPLICATION(400,"MEMBER-ERR-400","MEMBER DUPLICATED"),
+    CODE_NOT_FOUND(400, "KAKAO-ERR-400", "authorization code not found"),
+    INVALID_TOKEN(401, "KAKAO-ERR-401", "this access token does not exist"),
 
 	//Groupbuying
 	CANNOT_DELETE_BOARD(500, "500 CANNOT DELETE BOARD", "공동구매 게시글을 삭제할 수 없습니다."),
@@ -25,8 +27,8 @@ public enum ErrorCode {
 	INVALID_BOARD_INSTANCE(500, "500 INVALID_BOARD_INSTANCE", "공동구매 보드 인스턴스를 생성할 수 없습니다.")
 	;
 
-	private int status;
-	private String errorCode;
-	private String message;
+    private int status;
+    private String errorCode;
+    private String message;
 
 }

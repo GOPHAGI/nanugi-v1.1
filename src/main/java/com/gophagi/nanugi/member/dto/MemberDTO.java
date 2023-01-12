@@ -2,6 +2,7 @@ package com.gophagi.nanugi.member.dto;
 
 import com.gophagi.nanugi.member.domain.Member;
 import com.gophagi.nanugi.member.domain.Role;
+import com.sun.istack.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -11,8 +12,11 @@ import java.math.BigDecimal;
 @ToString
 public class MemberDTO {
 
+    @NotNull
     private Long id;
+    @NotNull
     private Long kakaoid;
+    @NotNull
     private String nickname;
     private String email;
     private Role role;
