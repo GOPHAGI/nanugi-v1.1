@@ -41,9 +41,11 @@ public class FileUtil {
     public List<PhotoDTO> storeFiles (Long uploaderId, List<MultipartFile> multipartFiles)  {
         List<PhotoDTO> storeFileResult = new ArrayList<>();
 
+        Long idx = 0L;
         for (MultipartFile multipartFile : multipartFiles) {
             if(!multipartFile.isEmpty()){
-                storeFileResult.add(storeFile(uploaderId,multipartFile));
+                storeFileResult.add(storeFile(idx,uploaderId,multipartFile));
+                idx++;
             }
         }
 
@@ -56,7 +58,7 @@ public class FileUtil {
      * @param multipartFile
      * @return FileDTO
      */
-    public PhotoDTO storeFile(Long uploaderId, MultipartFile multipartFile)  {
+    public PhotoDTO storeFile(Long idx, Long uploaderId, MultipartFile multipartFile)  {
         if( multipartFile.isEmpty()){
             throw new NullPointerException("multipartFile is empty");
         }
@@ -83,6 +85,7 @@ public class FileUtil {
 
             String imagePath = amazonS3Client.getUrl(S3Bucket, storefileName).toString(); // 접근가능한 URL 가져오기
 
+            file.setFileIndex(idx);
             file.setUploaderId(uploaderId);
             file.setStoreFileName(storefileName);
             file.setUploadFileName(originalFileName);
@@ -125,12 +128,12 @@ public class FileUtil {
 
     /**
      * S3에 올린 파일들 삭제
-     * @param deleteItemsList
+     * @param
      */
-    public void deleteFiles(List<PhotoDTO> deleteItemsList) {
-        for (PhotoDTO deleteItem : deleteItemsList) {
-            if(deleteItem != null){
-                deleteFile(deleteItem);
+    public void deleteFiles(List<PhotoDTO> deletePhotoList) {
+        for (PhotoDTO deletePhoto : deletePhotoList) {
+            if(deletePhoto != null){
+                deleteFile(deletePhoto);
             }
         }
     }

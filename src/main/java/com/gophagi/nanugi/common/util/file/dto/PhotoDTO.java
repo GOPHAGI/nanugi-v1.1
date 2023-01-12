@@ -18,36 +18,40 @@ import lombok.ToString;
 @ToString
 public class PhotoDTO {
 
-	private Long fileId;
-	private Long uploaderId;
-	private String uploadFileName;
-	private String storeFileName;
-	private String filetype;
-	private String fileUrl;
-	private GroupbuyingBoard groupbuyingBoard;
+    private Long fileId;
+    private Long fileIndex;
+    private Long uploaderId;
+    private String uploadFileName;
+    private String storeFileName;
+    private String filetype;
+    private String fileUrl;
+    private GroupbuyingBoard groupbuyingBoard;
 
-	@Builder
-	public PhotoDTO(Long fileId, Long uploaderId, String uploadFileName, String storeFileName, String filetype,
-		String fileUrl, GroupbuyingBoard groupbuyingBoard) {
-		this.fileId = fileId;
-		this.uploaderId = uploaderId;
-		this.uploadFileName = uploadFileName;
-		this.storeFileName = storeFileName;
-		this.filetype = filetype;
-		this.fileUrl = fileUrl;
-		this.groupbuyingBoard = groupbuyingBoard;
-	}
+    @Builder
+    public PhotoDTO(Long fileId, Long fileIndex, Long uploaderId,
+                    String uploadFileName, String storeFileName,
+                    String filetype, String fileUrl, GroupbuyingBoard groupbuyingBoard) {
+        this.fileId = fileId;
+        this.fileIndex = fileIndex;
+        this.uploaderId = uploaderId;
+        this.uploadFileName = uploadFileName;
+        this.storeFileName = storeFileName;
+        this.filetype = filetype;
+        this.fileUrl = fileUrl;
+        this.groupbuyingBoard = groupbuyingBoard;
+    }
 
-	public static PhotoDTO toPhotoDTO(Photo photo) {
-		return PhotoDTO.builder()
-			.fileId(photo.getFileId())
-			.filetype(photo.getFiletype())
-			.storeFileName(photo.getStoreFileName())
-			.uploadFileName(photo.getUploadFileName())
-			.uploaderId(photo.getUploaderId())
-			.fileUrl(photo.getFileUrl())
-			.build();
-	}
+    public static PhotoDTO toPhotoDTO(Photo photo){
+        return PhotoDTO.builder()
+                .fileId(photo.getFileId())
+                .fileIndex(photo.getFileIndex())
+                .filetype(photo.getFiletype())
+                .storeFileName(photo.getStoreFileName())
+                .uploadFileName(photo.getUploadFileName())
+                .uploaderId(photo.getUploaderId())
+                .fileUrl(photo.getFileUrl())
+                .build();
+    }
 
 	public static List<PhotoDTO> toPhotoDTOs(List<Photo> photos) {
 		return photos.stream()

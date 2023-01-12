@@ -1,16 +1,19 @@
 package com.gophagi.nanugi.common.util.file.service;
 
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import com.gophagi.nanugi.common.util.file.FileUtil;
 import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.common.util.file.dto.PhotoDTO;
 import com.gophagi.nanugi.common.util.file.repository.FileRepository;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
+import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -32,45 +35,61 @@ public class FileService {
 		}
 	}
 
-	public void deleteFiles(List<PhotoDTO> deleteFiles) {
+    public void deleteFiles(List<PhotoDTO> deleteFiles) {
 
-		//s3에서 파일삭제
-		//fileUtil.deleteFiles(deleteFiles);
+        //s3에서 파일삭제
+        fileUtil.deleteFiles(deleteFiles);
 
-		//DB에서 파일삭제
-		for (PhotoDTO deleteFile : deleteFiles) {
-			deleteFile(deleteFile);
-		}
-	}
+        //DB에서 파일삭제
+        for (PhotoDTO deleteFile : deleteFiles) {
+            deleteFile(deleteFile);
+        }
+    }
 
 	/**
 	 * DB에 파일 정보 저장
 	 *
 	 * @param uploadItem
-	 * @return PhotoDTO
 	 */
 	private void saveFile(PhotoDTO uploadItem, GroupbuyingBoard groupbuyingBoard) {
 		uploadItem.setGroupbuyingBoard(groupbuyingBoard);
-		PhotoDTO saveFileDTO = PhotoDTO.toPhotoDTO(fileRepository.save(Photo.toPhoto(uploadItem)));
+        Long idx = getPhotoLastIndex(groupbuyingBoard);
+        uploadItem.setFileIndex(idx);
+        PhotoDTO saveFileDTO = PhotoDTO.toPhotoDTO(fileRepository.save(Photo.toPhoto(uploadItem)));
 		log.info("FileService saveFile : {}", saveFileDTO);
 	}
 
-	/**
-	 * DB에서 사진 삭제
-	 * @param photoDTO
-	 */
-	public void deleteFile(PhotoDTO photoDTO) {
-		log.info("FileService deleteFile : {}", photoDTO);
-		fileRepository.delete(Photo.toPhoto(photoDTO));
+    private Long getPhotoLastIndex(GroupbuyingBoard groupbuyingBoard) {
+        return  fileRepository.findLastIndexByGroupbuyingBoardId(groupbuyingBoard.getId());
+    }
+
+    /**
+     * DB에서 사진 삭제
+     * @param photoDTO
+     */
+    public void deleteFile(PhotoDTO photoDTO) {
+        log.info("FileService deleteFile : {}", photoDTO);
+        fileRepository.delete(Photo.toPhoto(photoDTO));
+    }
+
+	public void updateFiles(GroupbuyingBoardDTO groupbuyingBoardDTO, List<MultipartFile> files, List<Long> deletePhotoIdList , Long userId) {
+
+		log.info("deletePhotoIdList : {}",deletePhotoIdList);
+		//id 리스트로 photoDto 리스트 받아오기
+		// 삭제한 이미지는 db랑 s3에서 지우기
+		if(deletePhotoIdList != null){
+			List<PhotoDTO> deletePhotoList = findAllById(deletePhotoIdList);
+			deleteFiles(deletePhotoList);
+		}
+
+		//새로 업로드한 이미지가 있으면 저장하기
+		if(files != null){
+			saveFiles(userId , GroupbuyingBoard.toGroupbuyingBoard(groupbuyingBoardDTO),files);
+		}
+
+	}
+	public List<PhotoDTO> findAllById(List<Long> deletePhotoIdList){
+		return  PhotoDTO.toPhotoDTOs(fileRepository.findAllById(deletePhotoIdList));
 	}
 
-	public List<PhotoDTO> updateFiles(GroupbuyingBoard retiveBoard, List<MultipartFile> files,
-		List<PhotoDTO> deletefiles, Long userId) {
-
-		////새로 업로드한 이미지가 있으면 저장하고 삭제한 이미지는 db랑 s3에서 지우기
-		deleteFiles(deletefiles);
-		saveFiles(userId, retiveBoard, files);
-
-		return null;
-	}
 }

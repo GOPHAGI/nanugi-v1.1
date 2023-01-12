@@ -1,14 +1,19 @@
 package com.gophagi.nanugi.member.service;
 
+import com.gophagi.nanugi.common.excepion.ErrorCode;
+import com.gophagi.nanugi.member.exception.InvaildKakaoTokenExcepion;
+import com.gophagi.nanugi.member.exception.NotFoundCodeException;
 import com.gophagi.nanugi.member.feignClient.KakaoMember;
 import com.gophagi.nanugi.member.dto.KakaoInfo;
 import com.gophagi.nanugi.member.dto.KakaoToken;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+
 
 @Slf4j
 @Service
@@ -38,13 +43,18 @@ public class KakaoService {
      * @param code
      * @return KakaoToken
      */
-    public KakaoToken getToken(final String code) {
+    public KakaoToken getToken(final String code)  {
+        KakaoToken token;
         try {
-            return kakaoMember.getToken(new URI(kakaoAuthUrl), restapiKey, redirectUrl, code, "authorization_code");
-        } catch (Exception e) {
-            log.error("Something error..", e);
-            return KakaoToken.fail();
+            token = kakaoMember.getToken(new URI(kakaoAuthUrl), restapiKey, redirectUrl, code, "authorization_code");
+        } catch (Exception ex) {
+            if(ex instanceof FeignException.BadRequest){
+                throw new NotFoundCodeException(ex, ErrorCode.CODE_NOT_FOUND);
+            }
+            throw new RuntimeException(ex);
         }
+        return token;
+
     }
 
     /**
@@ -52,25 +62,33 @@ public class KakaoService {
      * @param token
      * @return KakaoInfo
      */
-    public KakaoInfo getInfo(final KakaoToken token) {
+    public KakaoInfo getInfo(final KakaoToken token)  {
         log.info("token = {}", token);
+        KakaoInfo kakaoInfo ;
         try {
-            KakaoInfo kakaoInfo = kakaoMember.getInfo(new URI(kakaoUserApiUrl), token.getTokenType() + " " + token.getAccessToken());
-            return kakaoInfo;
+            kakaoInfo = kakaoMember.getInfo(new URI(kakaoUserApiUrl), token.getTokenType() + " " +token.getAccessToken());
+        } catch (Exception ex) {
+            if(ex instanceof FeignException.Unauthorized){
+                throw new InvaildKakaoTokenExcepion(ex, ErrorCode.INVALID_TOKEN);
+            }
+            throw new RuntimeException(ex);
         }
-        catch (Exception e) {
-            log.error("something error..", e);
-            return KakaoInfo.fail();
-        }
+
+
+        return kakaoInfo;
+
     }
 
 
     public void kakaoLogout(final KakaoToken token) {
         try {
-            kakaoMember.kakaoLogout(new URI(kakaoLogoutApiUrl), token.getTokenType() + " " + token.getAccessToken());
+            kakaoMember.kakaoLogout(new URI(kakaoLogoutApiUrl), token.getTokenType() + " 2" + token.getAccessToken());
         }
-        catch (Exception e) {
-            log.error("something error..", e);
+        catch (Exception ex) {
+            if(ex instanceof FeignException.Unauthorized){
+                throw new InvaildKakaoTokenExcepion(ex, ErrorCode.INVALID_TOKEN);
+            }
+            throw new RuntimeException(ex);
         }
     }
 }
