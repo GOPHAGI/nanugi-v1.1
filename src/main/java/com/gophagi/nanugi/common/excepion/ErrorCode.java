@@ -18,8 +18,10 @@ public enum ErrorCode {
     //Member
     MEMBER_DUPLICATION(400,"MEMBER-ERR-400","MEMBER DUPLICATED"),
     CODE_NOT_FOUND(400, "KAKAO-ERR-400", "authorization code not found"),
-    INVALID_TOKEN(401, "KAKAO-ERR-401", "this access token does not exist")
+    INVALID_TOKEN(401, "KAKAO-ERR-401", "this access token does not exist"),
 
+    //File
+    FAIL_UPLOAD(500,"FILE-ERR-500","파일 업로드를 실패하였습니다.")
     ;
 
 
