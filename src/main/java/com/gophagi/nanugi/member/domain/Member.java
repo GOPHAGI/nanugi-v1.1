@@ -36,6 +36,9 @@ public class Member extends BaseTime {
     @Column(precision = 3, scale = 1)
     private BigDecimal ratingScore;
 
+    @Column
+    private String profileImageURL;
+
     public Member(MemberBuilder memberBuilder) {
         super();
     }
@@ -51,13 +54,10 @@ public class Member extends BaseTime {
         this.ratingScore = this.ratingScore == null ? new BigDecimal("0") : this.ratingScore;
     }
 
-    public Member(Long kakaoid, String nickname, String email) {
-        this.kakaoid = kakaoid;
-        this.nickname = nickname;
-        this.email = email;
-    }
     @Builder
-    public Member(Long id, Long kakaoid, String nickname, String email, Role role, String activated, BigDecimal ratingScore) {
+    public Member(Long id, Long kakaoid, String nickname,
+                  String email, Role role, String activated,
+                  BigDecimal ratingScore, String profileImageURL) {
         this.id = id;
         this.kakaoid = kakaoid;
         this.nickname = nickname;
@@ -65,6 +65,7 @@ public class Member extends BaseTime {
         this.role = role;
         this.activated = activated;
         this.ratingScore = ratingScore;
+        this.profileImageURL = profileImageURL;
     }
 
     public static Member toMember(MemberDTO member){
@@ -76,6 +77,7 @@ public class Member extends BaseTime {
                 .role(member.getRole())
                 .activated(member.getActivated())
                 .ratingScore(member.getRatingScore())
+                .profileImageURL(member.getProfileImageURL())
                 .build();
     }
 }
