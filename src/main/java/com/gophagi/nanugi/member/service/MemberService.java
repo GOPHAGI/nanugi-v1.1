@@ -71,6 +71,7 @@ public class MemberService {
         newMember.setKakaoid(kakaoid);
         newMember.setNickname(kakaoInfo.getKakaoAccount().getProfile().getNickname());
         newMember.setEmail(kakaoInfo.getKakaoAccount().getEmail());
+        newMember.setProfileImageURL(kakaoInfo.getKakaoAccount().getProfile().getProfileImageURL());
 
         return MemberDTO.toMemberDTO(memberRepository.save(Member.toMember(newMember)));
     }
