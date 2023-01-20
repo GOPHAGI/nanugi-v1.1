@@ -94,7 +94,7 @@ public class KakaoService {
 
     public void kakaoLogout(final KakaoToken token) {
         try {
-            kakaoMember.kakaoLogout(new URI(kakaoLogoutApiUrl), token.getTokenType() + " 2" + token.getAccessToken());
+            kakaoMember.kakaoLogout(new URI(kakaoLogoutApiUrl), token.getTokenType()  + " " + token.getAccessToken());
         }
         catch (Exception ex) {
             if(ex instanceof FeignException.Unauthorized){

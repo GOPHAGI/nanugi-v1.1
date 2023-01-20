@@ -39,7 +39,15 @@ dependencies {
 	implementation "org.springframework.cloud:spring-cloud-starter-openfeign:3.1.0" //feignClient
 	implementation "mysql:mysql-connector-java"
 	compileOnly 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' //s3
-	//implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+	implementation 'org.glassfish.jaxb:jaxb-runtime'
+	implementation 'org.webjars:sockjs-client:1.1.2'
+	implementation 'org.webjars:stomp-websocket:2.3.3-1'
+	implementation 'com.google.code.gson:gson:2.8.0'
+
 	//implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	//runtimeOnly 'com.h2database:h2'
 }

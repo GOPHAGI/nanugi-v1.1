@@ -22,7 +22,7 @@ public class MemberController {
     private final MemberService memberService;
     private final GroupbuyingBoardQueryService groupbuyingBoardQueryService;
     @RequestMapping
-    public MemberDTO memberView(HttpSession session){
+    public MemberDTO memberInfo(HttpSession session){
 
         Long userId = (Long) session.getAttribute("userId");
         MemberDTO member = memberService.getMemberById(userId);
