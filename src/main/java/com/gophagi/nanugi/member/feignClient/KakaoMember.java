@@ -3,6 +3,7 @@ package com.gophagi.nanugi.member.feignClient;
 import com.gophagi.nanugi.member.config.KakaoFeignConfiguration;
 import com.gophagi.nanugi.member.dto.KakaoInfo;
 import com.gophagi.nanugi.member.dto.KakaoToken;
+import com.gophagi.nanugi.member.dto.Profile;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,4 +25,8 @@ public interface KakaoMember {
 
     @PostMapping
     void kakaoLogout(URI baseUrl, @RequestHeader("Authorization") String accessToken);
+
+    @PostMapping
+    Profile getProfile(URI baseUrl, @RequestHeader("Authorization")String accessToken);
+
 }

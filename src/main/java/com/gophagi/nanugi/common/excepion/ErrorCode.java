@@ -19,6 +19,7 @@ public enum ErrorCode {
     CODE_NOT_FOUND(400, "KAKAO-ERR-400", "authorization code not found"),
     INVALID_TOKEN(401, "KAKAO-ERR-401", "this access token does not exist"),
 
+
 	//Groupbuying
 	CANNOT_DELETE_BOARD(500, "500 CANNOT DELETE BOARD", "공동구매 게시글을 삭제할 수 없습니다."),
 	PARTICIPATION_DUPLICATION(500, "500 PARTICIPATION_DUPLICATION", "중복된 참여 신청입니다."),

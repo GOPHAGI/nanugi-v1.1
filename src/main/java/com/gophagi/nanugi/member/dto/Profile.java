@@ -9,4 +9,5 @@ import lombok.ToString;
 @ToString
 public class Profile {
     private String nickname;
+    private String profileImageURL;
 }

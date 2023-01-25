@@ -22,9 +22,12 @@ public class MemberDTO {
     private Role role;
     private String activated;
     private BigDecimal ratingScore;
+    private String profileImageURL;
 
     @Builder
-    public MemberDTO(Long id, Long kakaoid, String nickname, String email, Role role, String activated, BigDecimal ratingScore) {
+    public MemberDTO(Long id, Long kakaoid, String nickname,
+                     String email, Role role, String activated,
+                     BigDecimal ratingScore, String profileImageURL) {
         this.id = id;
         this.kakaoid = kakaoid;
         this.nickname = nickname;
@@ -32,6 +35,7 @@ public class MemberDTO {
         this.role = role;
         this.activated = activated;
         this.ratingScore = ratingScore;
+        this.profileImageURL = profileImageURL;
     }
 
     public static MemberDTO toMemberDTO(Member member){
@@ -43,6 +47,7 @@ public class MemberDTO {
                 .role(member.getRole())
                 .activated(member.getActivated())
                 .ratingScore(member.getRatingScore())
+                .profileImageURL(member.getProfileImageURL())
                 .build();
     }
 }

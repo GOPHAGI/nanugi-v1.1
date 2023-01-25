@@ -1,6 +1,7 @@
 package com.gophagi.nanugi.member.service;
 
 import com.gophagi.nanugi.common.excepion.ErrorCode;
+import com.gophagi.nanugi.member.dto.Profile;
 import com.gophagi.nanugi.member.exception.InvaildKakaoTokenExcepion;
 import com.gophagi.nanugi.member.exception.NotFoundCodeException;
 import com.gophagi.nanugi.member.feignClient.KakaoMember;
@@ -29,6 +30,9 @@ public class KakaoService {
     @Value("${kakao.user-api-url}")
     private String kakaoUserApiUrl;
 
+    @Value("${kakao.profile-url}")
+    private String profileUrl;
+
     @Value("${kakao.logout-api-url}")
     private String kakaoLogoutApiUrl;
 
@@ -46,6 +50,7 @@ public class KakaoService {
     public KakaoToken getToken(final String code)  {
         KakaoToken token;
         try {
+
             token = kakaoMember.getToken(new URI(kakaoAuthUrl), restapiKey, redirectUrl, code, "authorization_code");
         } catch (Exception ex) {
             if(ex instanceof FeignException.BadRequest){
@@ -65,8 +70,15 @@ public class KakaoService {
     public KakaoInfo getInfo(final KakaoToken token)  {
         log.info("token = {}", token);
         KakaoInfo kakaoInfo ;
+
         try {
-            kakaoInfo = kakaoMember.getInfo(new URI(kakaoUserApiUrl), token.getTokenType() + " " +token.getAccessToken());
+            Profile profile = kakaoMember.getProfile(new URI(profileUrl), token.getTokenType() + " " + token.getAccessToken());
+            log.info("profile :{}", profile);
+            kakaoInfo = kakaoMember.getInfo(new URI(kakaoUserApiUrl), token.getTokenType() + " " + token.getAccessToken());
+
+            kakaoInfo.getKakaoAccount().getProfile().setProfileImageURL(profile.getProfileImageURL());
+            log.info("kakaoInfo :{}", kakaoInfo);
+
         } catch (Exception ex) {
             if(ex instanceof FeignException.Unauthorized){
                 throw new InvaildKakaoTokenExcepion(ex, ErrorCode.INVALID_TOKEN);
@@ -82,7 +94,7 @@ public class KakaoService {
 
     public void kakaoLogout(final KakaoToken token) {
         try {
-            kakaoMember.kakaoLogout(new URI(kakaoLogoutApiUrl), token.getTokenType() + " 2" + token.getAccessToken());
+            kakaoMember.kakaoLogout(new URI(kakaoLogoutApiUrl), token.getTokenType()  + " " + token.getAccessToken());
         }
         catch (Exception ex) {
             if(ex instanceof FeignException.Unauthorized){

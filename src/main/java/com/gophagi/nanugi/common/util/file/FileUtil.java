@@ -5,7 +5,9 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.common.util.file.dto.PhotoDTO;
+import com.gophagi.nanugi.common.util.file.exception.FailedFileUploadExcepion;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -94,7 +97,7 @@ public class FileUtil {
             log.info("FileUtil storeFile : {}" ,file);
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FailedFileUploadExcepion(e, ErrorCode.FAIL_UPLOAD);
         }
 
 
