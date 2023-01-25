@@ -41,8 +41,8 @@ public class Participant extends BaseTime {
 
 	public static Participant toParticipant(ParticipantDTO dto) {
 		return Participant.builder()
-			.member(dto.getMember())
-			.groupbuyingBoard(dto.getGroupbuyingBoard())
+			.member(Member.toMember(dto.getMember()))
+			.groupbuyingBoard(GroupbuyingBoard.toGroupbuyingBoard(dto.getGroupbuyingBoard()))
 			.role(dto.getRole())
 			.build();
 	}
