@@ -15,6 +15,7 @@ import com.gophagi.nanugi.chatting.repository.ChatRoomRepository;
 import com.gophagi.nanugi.chatting.service.ChatService;
 import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
 import com.gophagi.nanugi.common.util.authentication.CommonAuthentication;
+import com.gophagi.nanugi.groupbuying.exception.NoAuthorityException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,6 +91,9 @@ public class StompHandler implements ChannelInterceptor {
 		// subscribe.unsubscribe(id) / header에서 id 가져와서 채팅방 roomId를 얻는다.
 		String roomId = getRoomId(message);
 
+		// 유저의 채팅방 구독 취소 가능 여부 확인한다.
+		checkAuthority(userId, roomId);
+
 		// 채팅방의 인원수를 -1한다.
 		chatRoomRepository.minusUserCount(roomId);
 
@@ -100,13 +104,35 @@ public class StompHandler implements ChannelInterceptor {
 		chatRoomRepository.removeUserEnterInfo(userId, roomId);
 	}
 
+	private void checkAuthority(String userId, String roomId) {
+		try {
+
+			authentication.hasAuthority(Long.parseLong(userId), Long.parseLong(roomId));
+
+		} catch (NoAuthorityException e) {
+
+			log.info("(더이상) 참여자 아님");
+
+			if (!chatRoomRepository.checkSubscribeRoom(userId, roomId)) {
+				throw e;
+			}
+		}
+	}
+
 	private void tryKickout(StompHeaderAccessor accessor, Message<?> message) {
 
-		String userId = accessor.getFirstNativeHeader("kickoutId");
+		String kickOutUserId = accessor.getFirstNativeHeader("kickoutId");
 		String name = accessor.getFirstNativeHeader("kickoutName");
 
 		// subscribe.unsubscribe(id) / header에서 id 가져와서 채팅방 roomId를 얻는다.
 		String roomId = getRoomId(message);
+
+		// 요청자가 게시자인지 확인한다.
+		String userId = getUserIdBySimpUser(message);
+		authentication.isPromoter(Long.parseLong(userId), Long.valueOf(roomId));
+
+		// 강퇴한 유저의 채팅방 구독 취소 가능 여부 확인한다.
+		checkAuthority(kickOutUserId, roomId);
 
 		// 채팅방의 인원수를 -1한다.
 		chatRoomRepository.minusUserCount(roomId);
@@ -115,9 +141,9 @@ public class StompHandler implements ChannelInterceptor {
 		chatService.sendChatMessage(buildChatMessage(roomId, name, ChatMessage.MessageType.QUIT));
 
 		// 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
-		chatRoomRepository.removeUserEnterInfo(userId, roomId);
+		chatRoomRepository.removeUserEnterInfo(kickOutUserId, roomId);
 
-		log.info("DISCONNECTED {}, {}, {}", userId, name, roomId);
+		log.info("DISCONNECTED {}, {}, {}", kickOutUserId, name, roomId);
 	}
 
 	private boolean isKickOutRequest(StompHeaderAccessor accessor) {

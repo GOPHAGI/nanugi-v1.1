@@ -118,6 +118,13 @@ public class ChatRoomRepository {
 	}
 
 	/**
+	 * 사용자가 채팅방 구독하는지 여부 확인
+	 * */
+	public boolean checkSubscribeRoom(String userId, String roomId) {
+		return setOpsEnterInfo.isMember(userId, roomId);
+	}
+
+	/**
 	 * 채팅방 삭제
 	 * 해당 채팅방 유저 mapping 정보 삭제
 	 * 해당 채팅방 조회수 정보 삭제
