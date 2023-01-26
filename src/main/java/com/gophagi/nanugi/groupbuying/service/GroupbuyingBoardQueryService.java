@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.gophagi.nanugi.groupbuying.constant.Category;
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
+import com.gophagi.nanugi.groupbuying.dto.BoardIdAndTitleDTO;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingThumbnailDTO;
 import com.gophagi.nanugi.groupbuying.dto.ParticipantDTO;
@@ -73,5 +74,11 @@ public class GroupbuyingBoardQueryService {
 		return new PageImpl<>(
 			GroupbuyingThumbnailDTO.toGroupbuyingThumbnailDTOs(groupbuyingBoards.getContent()),
 			pageRequest, groupbuyingBoards.getTotalElements());
+	}
+
+	public BoardIdAndTitleDTO retrieveBoardIdAndTitleDTO(Long boardId) {
+		GroupbuyingBoard groupbuyingBoard = repository.findById(boardId)
+			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException());
+		return BoardIdAndTitleDTO.toGroupbuyingBoardDTO(groupbuyingBoard);
 	}
 }

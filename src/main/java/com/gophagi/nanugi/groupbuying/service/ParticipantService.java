@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
@@ -82,7 +83,13 @@ public class ParticipantService {
 	}
 
 	public void delete(Long id) {
-		Participant participant = repository.findById(id).orElseThrow(() -> new InvalidParticipantInstanceException());
-		repository.delete(participant);
+		repository.deleteById(id);
+	}
+
+	@Transactional
+	public ParticipantDTO retrieveByUserIdAndBoardId(Long userId, Long boardId) {
+		Participant participant = repository.findByGroupbuyingBoardIdAndMemberId(boardId, userId)
+			.orElseThrow(() -> new RuntimeException("해당 보드와 사용자 아이디가 일치하는 데이터가 존재하지 않음."));
+		return ParticipantDTO.toParticipantDTO(participant);
 	}
 }

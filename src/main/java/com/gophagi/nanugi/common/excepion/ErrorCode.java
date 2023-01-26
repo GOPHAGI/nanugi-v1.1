@@ -13,6 +13,7 @@ public enum ErrorCode {
 	NOT_FOUND(404, "404 Not Found", "PAGE NOT FOUND"),
 	METHOD_NOT_ALLOWED(405, "405 Method Not Allowed", "허용하지 않는 요청 Method 입니다."),
 	INTER_SERVER_ERROR(500, "500 Internal Server Error", "INTER SERVER ERROR"),
+	FAIL_UPLOAD(500, "500 Fail Upload", "FAIL UPLOAD"),
 
     //Member
     MEMBER_DUPLICATION(400,"MEMBER-ERR-400","MEMBER DUPLICATED"),
