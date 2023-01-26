@@ -1,5 +1,8 @@
 package com.gophagi.nanugi.groupbuying.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.Participant;
 import com.gophagi.nanugi.member.dto.MemberDTO;
@@ -36,5 +39,11 @@ public class ParticipantDTO {
 			.groupbuyingBoard(GroupbuyingBoardDTO.toGroupbuyingBoardDTO(participant.getGroupbuyingBoard()))
 			.role(participant.getRole())
 			.build();
+	}
+
+	public static List<ParticipantDTO> toParticipantDTOs(List<Participant> participants) {
+		return participants.stream()
+			.map(ParticipantDTO::toParticipantDTO)
+			.collect(Collectors.toList());
 	}
 }
