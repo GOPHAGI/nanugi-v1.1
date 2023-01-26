@@ -14,6 +14,7 @@ import com.gophagi.nanugi.chatting.dto.ChatMessage;
 import com.gophagi.nanugi.chatting.repository.ChatRoomRepository;
 import com.gophagi.nanugi.chatting.service.ChatService;
 import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
+import com.gophagi.nanugi.common.util.authentication.CommonAuthentication;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class StompHandler implements ChannelInterceptor {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final ChatRoomRepository chatRoomRepository;
 	private final ChatService chatService;
+	private final CommonAuthentication authentication;
 
 	// websocket을 통해 들어온 요청이 처리 되기전 실행된다.
 	@Override
@@ -65,6 +67,9 @@ public class StompHandler implements ChannelInterceptor {
 
 		// 채팅방에 들어온 클라이언트 userId를 roomId와 맵핑해 놓는다.(나중에 특정 세션이 어떤 채팅방에 들어가 있는지 알기 위함)
 		String userId = getUserIdBySimpUser(message);
+
+		authentication.hasAuthority(Long.parseLong(userId), Long.parseLong(roomId));
+
 		chatRoomRepository.setUserEnterInfo(userId, roomId);
 
 		// 채팅방의 인원수를 +1한다.
