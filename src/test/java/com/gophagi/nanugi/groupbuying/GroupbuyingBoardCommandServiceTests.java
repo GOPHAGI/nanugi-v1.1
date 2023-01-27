@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.gophagi.nanugi.common.util.authentication.CommonAuthentication;
+import com.gophagi.nanugi.common.auth.CommonAuthentication;
 import com.gophagi.nanugi.common.util.file.service.FileService;
 import com.gophagi.nanugi.groupbuying.constant.Status;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;

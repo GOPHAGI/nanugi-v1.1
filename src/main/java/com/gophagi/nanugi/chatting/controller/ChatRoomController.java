@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.gophagi.nanugi.chatting.dto.ChatRoom;
 import com.gophagi.nanugi.chatting.repository.ChatRoomRepository;
 import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
-import com.gophagi.nanugi.common.util.authentication.CommonAuthentication;
+import com.gophagi.nanugi.common.auth.CommonAuthentication;
 import com.gophagi.nanugi.groupbuying.exception.InvalidGroupbuyingBoardInstanceException;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardQueryService;
 import com.gophagi.nanugi.groupbuying.vo.BoardIdAndTitleVO;

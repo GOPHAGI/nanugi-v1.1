@@ -1,4 +1,4 @@
-package com.gophagi.nanugi.common.util.authentication;
+package com.gophagi.nanugi.common.auth;
 
 import org.springframework.stereotype.Component;
 

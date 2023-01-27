@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gophagi.nanugi.common.excepion.ErrorCode;
-import com.gophagi.nanugi.common.util.authentication.CommonAuthentication;
+import com.gophagi.nanugi.common.auth.CommonAuthentication;
 import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.common.util.file.service.FileService;
 import com.gophagi.nanugi.groupbuying.constant.Status;
