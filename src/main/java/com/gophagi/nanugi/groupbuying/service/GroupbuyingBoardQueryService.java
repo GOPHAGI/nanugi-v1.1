@@ -37,33 +37,18 @@ public class GroupbuyingBoardQueryService {
 
 	@Transactional
 	public List<GroupbuyingBoardDTO> searchGroupbuyingBoardByUserId(Long userId) {
-
 		List<ParticipantDTO> participants = participantService.retrieveByUserId(userId);
-
-		List<GroupbuyingBoardDTO> groupbuyingBoards = new ArrayList<>();
-		for (ParticipantDTO participantDTO : participants) {
-			groupbuyingBoards.add(participantDTO.getGroupbuyingBoard());
-		}
-
-		return groupbuyingBoards;
+		return getGroupbuyingBoardDTOS(participants);
 	}
 
 	@Transactional
 	public List<GroupbuyingBoardDTO> searchGroupbuyingBoardByUserIdAndRole(Long userId, Role role) {
-
 		List<ParticipantDTO> participants = participantService.retrieveByUserIdAndRole(userId, role);
-
-		List<GroupbuyingBoardDTO> groupbuyingBoards = new ArrayList<>();
-		for (ParticipantDTO dto : participants) {
-			groupbuyingBoards.add(dto.getGroupbuyingBoard());
-		}
-
-		return groupbuyingBoards;
+		return getGroupbuyingBoardDTOS(participants);
 	}
 
 	@Transactional
 	public Page<GroupbuyingThumbnailDTO> retrieveList(int page) {
-
 		PageRequest pageRequest = PageRequest.of(page, 20);
 		Page<GroupbuyingBoard> groupbuyingBoards = repository.findAll(pageRequest);
 
@@ -74,7 +59,6 @@ public class GroupbuyingBoardQueryService {
 
 	@Transactional
 	public Page<GroupbuyingThumbnailDTO> retrieveCategoryList(Category category, int page) {
-
 		PageRequest pageRequest = PageRequest.of(page, 20);
 		Page<GroupbuyingBoard> groupbuyingBoards = repository.findByCategory(category, pageRequest);
 
@@ -91,5 +75,13 @@ public class GroupbuyingBoardQueryService {
 	private GroupbuyingBoard getGroupbuyingBoard(Long boardId) {
 		return repository.findById(boardId)
 			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException(ErrorCode.RETRIEVE_ERROR));
+	}
+
+	private List<GroupbuyingBoardDTO> getGroupbuyingBoardDTOS(List<ParticipantDTO> participants) {
+		List<GroupbuyingBoardDTO> groupbuyingBoards = new ArrayList<>();
+		for (ParticipantDTO participantDTO : participants) {
+			groupbuyingBoards.add(participantDTO.getGroupbuyingBoard());
+		}
+		return groupbuyingBoards;
 	}
 }
