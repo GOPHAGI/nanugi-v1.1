@@ -29,14 +29,14 @@ public class MemberController {
     }
     @PostMapping("/update")
     public MemberDTO updateMember(@ModelAttribute MemberDTO updatedMember,
-                               @RequestParam Long userId){
-
+                                  @CookieValue String token){
+        Long userId = JwtTokenProvider.getUserIdFromJwt(token);
         return memberService.updateMember(userId, updatedMember);
     }
 
     @PostMapping("/my")
-    public MemberGroupbuyingBoardDTO myPageView(@RequestParam Long userId){
-
+    public MemberGroupbuyingBoardDTO myPageView(@CookieValue String token){
+        Long userId = JwtTokenProvider.getUserIdFromJwt(token);
         //멤버 정보 가져오기
         MemberDTO member = memberService.getMemberById(userId);
         //model.addAttribute("member",member);
@@ -49,9 +49,9 @@ public class MemberController {
 
     //마이페이지 - 공동구매 내역조회(구매)
     @PostMapping("/my/order")
-    public List<GroupbuyingBoardDTO> getGroupbuyingOrderList(@RequestParam Long userId){
-
-        //todo: 공구 구매 목록 전체 가져오기
+    public List<GroupbuyingBoardDTO> getGroupbuyingOrderList(@CookieValue String token){
+        Long userId = JwtTokenProvider.getUserIdFromJwt(token);
+        //todo: 공구 구매 목록 전체 가져오기 role= PARTICIPANT
         List<GroupbuyingBoardDTO> groupbuyingBoardDTOList =  groupbuyingBoardQueryService.searchGroupbuyingBoardByUserId(userId);
 
         return  groupbuyingBoardDTOList;
@@ -59,9 +59,9 @@ public class MemberController {
 
     //마이페이지 - 공동구매 내역조회(판매)
     @PostMapping("/my/selling")
-    public List<GroupbuyingBoardDTO> getGroupbuyingSellingList(@RequestParam Long userId){
-
-        //todo: 공구 구매 목록 전체 가져오기
+    public List<GroupbuyingBoardDTO> getGroupbuyingSellingList(@CookieValue String token){
+        Long userId = JwtTokenProvider.getUserIdFromJwt(token);
+        //todo: 공구 판매 목록 전체 가져오기 participant role =PROMOTER
         List<GroupbuyingBoardDTO> groupbuyingBoardDTOList =  groupbuyingBoardQueryService.searchGroupbuyingBoardByUserId(userId);
 
         return  groupbuyingBoardDTOList;
