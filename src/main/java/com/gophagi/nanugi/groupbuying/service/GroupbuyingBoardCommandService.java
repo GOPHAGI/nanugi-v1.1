@@ -54,7 +54,7 @@ public class GroupbuyingBoardCommandService {
 	@Transactional
 	public void update(GroupbuyingBoardUpdateDTO dto, Long userId) {
 		// 공동구매 수정 권한 확인 (게시자만 수정 가능)
-		authentication.isPromoter(userId,dto.getId());
+		authentication.isPromoter(userId, dto.getId());
 		// 공동구매의 진행상태에 따른 수정 가능 여부 확인
 		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(dto.getId());
 		if (groupbuyingBoard.getStatus() != Status.GATHERING) {
@@ -65,7 +65,7 @@ public class GroupbuyingBoardCommandService {
 		// 공동구매 변경내역 업데이트
 		groupbuyingBoard.update(dto);
 		// 새로운 이미지 파일 저장 (공동구매 - 이미지 파일)
-		fileService.saveAllPhotos(Photo.findAndSetNewPhotos(dto,groupbuyingBoard));
+		fileService.saveAllPhotos(Photo.findAndSetNewPhotos(dto, groupbuyingBoard));
 	}
 
 	@Transactional
@@ -94,7 +94,7 @@ public class GroupbuyingBoardCommandService {
 			throw new IllegalStateException(ErrorCode.CANNOT_CANCEL_REQUEST.getMessage());
 		}
 		// 공동구매 참여자에서 제외 -> 취소 진행
-		participantService.delete(dto.getId());
+		participantService.deleteById(dto.getId());
 	}
 
 	@Transactional
@@ -165,5 +165,19 @@ public class GroupbuyingBoardCommandService {
 		}
 		// 공동구매의 진행상태를 DONE으로 변경
 		groupbuyingBoard.updateStatus(Status.DONE);
+	}
+
+	@Transactional
+	public void kickOut(Long userId, Long boardId, Long participantId) {
+		// 공동구매 강퇴 권한 확인 (게시자만 가능)
+		authentication.isPromoter(userId, boardId);
+		authentication.isParticipant(participantId, boardId);
+		// 공동구매의 진행상태에 따른 강퇴 가능 여부 확인
+		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(boardId);
+		if (groupbuyingBoard.getStatus() != Status.GATHERING) {
+			throw new IllegalStateException();
+		}
+		// participant 강퇴
+		participantService.deleteById(participantId);
 	}
 }

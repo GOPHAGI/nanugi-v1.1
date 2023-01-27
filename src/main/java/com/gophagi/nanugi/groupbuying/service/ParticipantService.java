@@ -70,7 +70,7 @@ public class ParticipantService {
 		return ParticipantDTO.toParticipantDTOs(participants);
 	}
 
-	public void delete(Long id) {
+	public void deleteById(Long id) {
 		repository.deleteById(id);
 	}
 
