@@ -101,8 +101,8 @@ public class GroupbuyingController {
 		return queryService.retrieveList(page);
 	}
 
-	@GetMapping("${groupbuying.retrieve-url}")
-	public Page<GroupbuyingThumbnailVO> retrieveCategoryList(@RequestParam Category category, int page) {
+	@GetMapping("${groupbuying.retrieve-url}/{page}")
+	public Page<GroupbuyingThumbnailVO> retrieveCategoryList(@RequestParam Category category, @PathVariable("page") int page) {
 		return queryService.retrieveCategoryList(category, page);
 	}
 }
