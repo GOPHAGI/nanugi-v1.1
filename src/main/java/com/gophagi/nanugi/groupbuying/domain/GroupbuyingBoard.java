@@ -100,16 +100,37 @@ public class GroupbuyingBoard extends BaseTime {
 	}
 
 	public void update(GroupbuyingBoardDTO dto) {
-		this.title = dto.getTitle();
-		this.category = dto.getCategory();
-		this.status = dto.getStatus();
-		this.price = dto.getPrice();
-		this.url = dto.getUrl();
-		this.regionCode = dto.getRegionCode();
-		this.wishLocationAddress = dto.getWishLocationAddress();
-		this.limitedNumberOfParticipants = dto.getLimitedNumberOfParticipants();
-		this.description = dto.getDescription();
-		this.viewCount = dto.getViewCount();
+		if (Objects.nonNull(dto.getTitle()) && !this.title.equals(dto.getTitle())) {
+			this.title = dto.getTitle();
+		}
+		if (Objects.nonNull(dto.getCategory()) && !this.category.equals(dto.getCategory())) {
+			this.category = dto.getCategory();
+		}
+		if (Objects.nonNull(dto.getPrice()) && !this.price.equals(dto.getPrice())) {
+			this.price = dto.getPrice();
+		}
+		if (Objects.nonNull(dto.getUrl()) && !this.url.equals(dto.getUrl())) {
+			this.url = dto.getUrl();
+		}
+		if (Objects.nonNull(dto.getRegionCode()) && !this.regionCode.equals(dto.getRegionCode())) {
+			this.regionCode = dto.getRegionCode();
+		}
+		if (Objects.nonNull(dto.getWishLocationAddress())) {
+			if (Objects.isNull(this.wishLocationAddress) || !this.wishLocationAddress.equals(
+				dto.getWishLocationAddress())) {
+				this.wishLocationAddress = dto.getWishLocationAddress();
+			}
+		}
+		if (Objects.nonNull(dto.getLimitedNumberOfParticipants()) && !this.limitedNumberOfParticipants.equals(
+			dto.getLimitedNumberOfParticipants())) {
+			this.limitedNumberOfParticipants = dto.getLimitedNumberOfParticipants();
+		}
+		if (Objects.nonNull(dto.getDescription()) && !this.description.equals(dto.getDescription())) {
+			this.description = dto.getDescription();
+		}
+		if (Objects.nonNull(dto.getViewCount()) && !this.viewCount.equals(dto.getViewCount())) {
+			this.viewCount = dto.getViewCount();
+		}
 	}
 
 	public boolean isFull() {
