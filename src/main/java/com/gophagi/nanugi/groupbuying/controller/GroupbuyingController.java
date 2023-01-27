@@ -2,6 +2,8 @@ package com.gophagi.nanugi.groupbuying.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,6 +79,12 @@ public class GroupbuyingController {
 	public void deprogress(@PathVariable("id") Long id, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
 		commandService.deprogress(userId, id);
+	}
+
+	@PostMapping("${groupbuying.complete-url}/{id}")
+	public void complete(@PathVariable("id") Long id, @CookieValue String token) {
+		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
+		commandService.complete(userId, id);
 	}
 
 	@GetMapping("${groupbuying.retrieve-url}/{id}")
