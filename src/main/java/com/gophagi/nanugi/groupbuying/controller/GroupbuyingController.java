@@ -1,7 +1,5 @@
 package com.gophagi.nanugi.groupbuying.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -15,12 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
 import com.gophagi.nanugi.groupbuying.constant.Category;
+import com.gophagi.nanugi.groupbuying.constant.Status;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardCommandService;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardQueryService;
+import com.gophagi.nanugi.groupbuying.vo.BoardIdAndTitleVO;
 import com.gophagi.nanugi.groupbuying.vo.GroupbuyingBoardInsertVO;
 import com.gophagi.nanugi.groupbuying.vo.GroupbuyingBoardUpdateVO;
 import com.gophagi.nanugi.groupbuying.vo.GroupbuyingThumbnailVO;
+import com.gophagi.nanugi.groupbuying.vo.KickOutInfoVO;
+import com.gophagi.nanugi.groupbuying.vo.RemoveInfoVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,21 +39,21 @@ public class GroupbuyingController {
 	}
 
 	@PostMapping(value = "${groupbuying.create-url}")
-	public void create(@RequestBody GroupbuyingBoardInsertVO vo, @CookieValue String token) {
+	public BoardIdAndTitleVO create(@RequestBody GroupbuyingBoardInsertVO vo, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
-		commandService.create(vo.toGroupbuyingBoardDTO(), userId);
+		return commandService.create(vo.toGroupbuyingBoardDTO(), userId);
 	}
 
 	@PostMapping(value = "${groupbuying.update-url}")
-	public void update(@Valid @RequestBody GroupbuyingBoardUpdateVO vo, @CookieValue String token) {
+	public Long update(@Valid @RequestBody GroupbuyingBoardUpdateVO vo, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
-		commandService.update(vo, userId);
+		return commandService.update(vo, userId);
 	}
 
 	@PostMapping("${groupbuying.order-url}/{id}")
-	public void order(@PathVariable("id") Long id, @CookieValue String token) {
+	public Long order(@PathVariable("id") Long id, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
-		commandService.order(userId, id);
+		return commandService.order(userId, id);
 	}
 
 	@PostMapping("${groupbuying.cancel-url}/{id}")
@@ -61,33 +63,33 @@ public class GroupbuyingController {
 	}
 
 	@PostMapping("${groupbuying.remove-url}/{id}")
-	public List<Long> remove(@PathVariable("id") Long id, @CookieValue String token) {
+	public RemoveInfoVO remove(@PathVariable("id") Long id, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
 		return commandService.remove(userId, id);
 	}
 
 	@PostMapping("${groupbuying.progress-url}/{id}")
-	public void progress(@PathVariable("id") Long id, @CookieValue String token) {
+	public Status progress(@PathVariable("id") Long id, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
-		commandService.progress(userId, id);
+		return commandService.progress(userId, id);
 	}
 
 	@PostMapping("${groupbuying.deprogress-url}/{id}")
-	public void deprogress(@PathVariable("id") Long id, @CookieValue String token) {
+	public Status deprogress(@PathVariable("id") Long id, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
-		commandService.deprogress(userId, id);
+		return commandService.deprogress(userId, id);
 	}
 
 	@PostMapping("${groupbuying.complete-url}/{id}")
-	public void complete(@PathVariable("id") Long id, @CookieValue String token) {
+	public Status complete(@PathVariable("id") Long id, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
-		commandService.complete(userId, id);
+		return commandService.complete(userId, id);
 	}
 
 	@PostMapping("${groupbuying.kickout-url}/{id}")
-	public void kickOut(@PathVariable("id") Long boardId, @CookieValue String token, @RequestBody Long participantId) {
+	public KickOutInfoVO kickOut(@PathVariable("id") Long boardId, @RequestParam Long participantId, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
-		commandService.kickOut(userId, boardId, participantId);
+		return commandService.kickOut(userId, boardId, participantId);
 	}
 
 	@GetMapping("${groupbuying.retrieve-url}/{id}")
@@ -101,8 +103,8 @@ public class GroupbuyingController {
 		return queryService.retrieveList(page);
 	}
 
-	@GetMapping("${groupbuying.retrieve-url}/{page}")
-	public Page<GroupbuyingThumbnailVO> retrieveCategoryList(@RequestParam Category category, @PathVariable("page") int page) {
+	@GetMapping("${groupbuying.retrieve-url}")
+	public Page<GroupbuyingThumbnailVO> retrieveCategoryList(@RequestParam Category category, @RequestParam int page) {
 		return queryService.retrieveCategoryList(category, page);
 	}
 }

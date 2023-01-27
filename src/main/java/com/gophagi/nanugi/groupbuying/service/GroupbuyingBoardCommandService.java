@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.common.auth.CommonAuthentication;
+import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.common.util.file.service.FileService;
 import com.gophagi.nanugi.groupbuying.constant.Status;
@@ -19,7 +19,11 @@ import com.gophagi.nanugi.groupbuying.exception.DuplicateParticipationException;
 import com.gophagi.nanugi.groupbuying.exception.InvalidGroupbuyingBoardInstanceException;
 import com.gophagi.nanugi.groupbuying.exception.PersonnelLimitExceededException;
 import com.gophagi.nanugi.groupbuying.repository.GroupbuyingBoardRepository;
+import com.gophagi.nanugi.groupbuying.vo.BoardIdAndTitleVO;
 import com.gophagi.nanugi.groupbuying.vo.GroupbuyingBoardUpdateVO;
+import com.gophagi.nanugi.groupbuying.vo.KickOutInfoVO;
+import com.gophagi.nanugi.groupbuying.vo.RemoveInfoVO;
+import com.gophagi.nanugi.member.domain.Member;
 
 @Service
 public class GroupbuyingBoardCommandService {
@@ -37,7 +41,7 @@ public class GroupbuyingBoardCommandService {
 	}
 
 	@Transactional
-	public void create(GroupbuyingBoardDTO dto, Long userId) {
+	public BoardIdAndTitleVO create(GroupbuyingBoardDTO dto, Long userId) {
 		try {
 			// 공동구매 게시글 생성
 			GroupbuyingBoard groupbuyingBoard = GroupbuyingBoard.toGroupbuyingBoard(dto);
@@ -46,13 +50,16 @@ public class GroupbuyingBoardCommandService {
 			fileService.saveAllPhotos(Photo.findAndSetNewPhotos(dto, groupbuyingBoard));
 			// 게시자로 공동구매 참여자 목록 추가
 			participantService.createAsPromoter(userId, groupbuyingBoard);
+
+			return BoardIdAndTitleVO.toBoardIdAndTitleVO(groupbuyingBoard);
+
 		} catch (Exception exception) {
 			throw new InvalidGroupbuyingBoardInstanceException(ErrorCode.INSERT_ERROR);
 		}
 	}
 
 	@Transactional
-	public void update(GroupbuyingBoardUpdateVO vo, Long userId) {
+	public Long update(GroupbuyingBoardUpdateVO vo, Long userId) {
 		// 공동구매 수정 권한 확인 (게시자만 수정 가능)
 		authentication.isPromoter(userId, vo.getId());
 		// 공동구매의 진행상태에 따른 수정 가능 여부 확인
@@ -66,10 +73,12 @@ public class GroupbuyingBoardCommandService {
 		groupbuyingBoard.update(vo.toGroupbuyingBoardDTO());
 		// 새로운 이미지 파일 저장 (공동구매 - 이미지 파일)
 		fileService.saveAllPhotos(Photo.findAndSetNewPhotos(vo.toGroupbuyingBoardDTO(), groupbuyingBoard));
+
+		return groupbuyingBoard.getId();
 	}
 
 	@Transactional
-	public void order(Long userId, Long boardId) {
+	public Long order(Long userId, Long boardId) {
 		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(boardId);
 
 		// 공동구매의 진행상태에 따른 신청 가능 여부 확인
@@ -87,6 +96,8 @@ public class GroupbuyingBoardCommandService {
 		}
 		// 공동구매 참여자 등록
 		participantService.createAsParticipant(userId, groupbuyingBoard);
+
+		return groupbuyingBoard.getId();
 	}
 
 	@Transactional
@@ -103,7 +114,7 @@ public class GroupbuyingBoardCommandService {
 	}
 
 	@Transactional
-	public List<Long> remove(Long userId, Long boardId) {
+	public RemoveInfoVO remove(Long userId, Long boardId) {
 		// 공동구매에 대한 게시자 여부 확인
 		authentication.isPromoter(userId, boardId);
 		// 공동구매의 진행상태에 따른 삭제 가능 여부 확인
@@ -112,14 +123,14 @@ public class GroupbuyingBoardCommandService {
 			throw new IllegalStateException(ErrorCode.CANNOT_DELETE_BOARD.getMessage());
 		}
 		// 채팅방 삭제를 위해 참여자 id 리스트 반환
-		List<Long> participantIds = groupbuyingBoard.getParticipants()
+		List<Long> participantUserIds = groupbuyingBoard.getParticipants()
 			.stream()
 			.map(Participant::getId)
 			.collect(Collectors.toList());
 		// 공동구매 게시글 삭제 진행
 		repository.delete(groupbuyingBoard);
 
-		return participantIds;
+		return new RemoveInfoVO(boardId, participantUserIds);
 	}
 
 	@Transactional
@@ -134,7 +145,7 @@ public class GroupbuyingBoardCommandService {
 	}
 
 	@Transactional
-	public void progress(Long userId, Long boardId) {
+	public Status progress(Long userId, Long boardId) {
 		// 공동구매 진행 권한 확인 (게시자만 가능)
 		authentication.isPromoter(userId, boardId);
 		// 공동구매의 진행상태에 따른 진행 가능 여부 확인
@@ -144,10 +155,12 @@ public class GroupbuyingBoardCommandService {
 		}
 		// 공동구매의 진행상태를 ONGOING으로 변경
 		groupbuyingBoard.updateStatus(Status.ONGOING);
+
+		return Status.ONGOING;
 	}
 
 	@Transactional
-	public void deprogress(Long userId, Long boardId) {
+	public Status deprogress(Long userId, Long boardId) {
 		// 공동구매 진행 취소 권한 확인 (게시자만 가능)
 		authentication.isPromoter(userId, boardId);
 		// 공동구매의 진행상태에 따른 진행 취소 가능 여부 확인
@@ -157,10 +170,12 @@ public class GroupbuyingBoardCommandService {
 		}
 		// 공동구매의 진행상태를 GATHERING으로 변경
 		groupbuyingBoard.updateStatus(Status.GATHERING);
+
+		return Status.GATHERING;
 	}
 
 	@Transactional
-	public void complete(Long userId, Long boardId) {
+	public Status complete(Long userId, Long boardId) {
 		// 공동구매 완료 권한 확인 (게시자만 가능)
 		authentication.isPromoter(userId, boardId);
 		// 공동구매의 진행상태에 따른 진행 취소 가능 여부 확인
@@ -170,19 +185,23 @@ public class GroupbuyingBoardCommandService {
 		}
 		// 공동구매의 진행상태를 DONE으로 변경
 		groupbuyingBoard.updateStatus(Status.DONE);
+
+		return Status.DONE;
 	}
 
 	@Transactional
-	public void kickOut(Long userId, Long boardId, Long participantId) {
+	public KickOutInfoVO kickOut(Long userId, Long boardId, Long kickedOutUserId) {
 		// 공동구매 강퇴 권한 확인 (게시자만 가능)
 		authentication.isPromoter(userId, boardId);
-		authentication.isParticipant(participantId, boardId);
+		authentication.isParticipant(kickedOutUserId, boardId);
 		// 공동구매의 진행상태에 따른 강퇴 가능 여부 확인
 		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(boardId);
 		if (groupbuyingBoard.getStatus() != Status.GATHERING) {
 			throw new IllegalStateException();
 		}
 		// participant 강퇴
-		participantService.deleteById(participantId);
+		participantService.deleteByMemberId(kickedOutUserId);
+
+		return new KickOutInfoVO(boardId, kickedOutUserId);
 	}
 }
