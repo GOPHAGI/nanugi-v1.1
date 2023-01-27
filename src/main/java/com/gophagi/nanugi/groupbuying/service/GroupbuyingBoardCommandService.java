@@ -128,6 +128,16 @@ public class GroupbuyingBoardCommandService {
 			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException(ErrorCode.RETRIEVE_ERROR));
 	}
 
-	public void progress(Long userId, Long id) {
+	@Transactional
+	public void progress(Long userId, Long boardId) {
+		// 공동구매 진행 권한 확인 (게시자만 가능)
+		authentication.isPromoter(userId, boardId);
+		// 공동구매의 진행상태에 따른 진행 가능 여부 확인
+		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(boardId);
+		if (groupbuyingBoard.getStatus() != Status.GATHERING) {
+			throw new IllegalStateException();
+		}
+		// 공동구매의 진행상태를 ONGOING으로 변경
+		groupbuyingBoard.updateStatus(Status.ONGOING);
 	}
 }

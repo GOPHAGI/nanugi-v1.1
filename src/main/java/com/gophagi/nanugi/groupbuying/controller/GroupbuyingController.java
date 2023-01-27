@@ -67,6 +67,12 @@ public class GroupbuyingController {
 		return commandService.remove(userId, id);
 	}
 
+	@PostMapping("${groupbuying.progress-url}/{id}")
+	public void progress(@PathVariable("id") Long id, @CookieValue String token) {
+		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
+		commandService.progress(userId, id);
+	}
+
 	@GetMapping("${groupbuying.retrieve-url}/{id}")
 	public GroupbuyingBoardDTO retrieve(@PathVariable("id") Long id) {
 		commandService.updateView(id);

@@ -141,4 +141,8 @@ public class GroupbuyingBoard extends BaseTime {
 			}
 		}
 	}
+
+	public void updateStatus(Status status) {
+		this.status = status;
+	}
 }
