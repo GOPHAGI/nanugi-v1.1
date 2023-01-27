@@ -2,7 +2,6 @@ package com.gophagi.nanugi.common.jwt;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -14,23 +13,29 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 @Component
 public class JwtTokenProvider {
 
-	@Value("${spring.jwt.secret}")
 	private static String secretKey;
+
+	@Value("${spring.jwt.secret}")
+	public void setSecretKey(String value) {
+		secretKey = value;
+	}
 
 	private long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
 
 	/**
-	 * 이름으로 Jwt Token을 생성한다.
+	 * 유저 ID와 이름으로 Jwt Token을 생성한다.
 	 */
-	public String generateToken(String name) {
+	public String generateToken(Long userId, String nickname) {
 		Date now = new Date();
 		return Jwts.builder()
-			.setId(name)
+			.setId(String.valueOf(userId))
+			.claim("nickname",nickname)
 			.setIssuedAt(now) // 토큰 발행일자
 			.setExpiration(new Date(now.getTime() + tokenValidMilisecond)) // 유효시간 설정
 			.signWith(SignatureAlgorithm.HS256, secretKey) // 암호화 알고리즘, secret값 세팅
