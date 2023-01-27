@@ -140,4 +140,17 @@ public class GroupbuyingBoardCommandService {
 		// 공동구매의 진행상태를 ONGOING으로 변경
 		groupbuyingBoard.updateStatus(Status.ONGOING);
 	}
+
+	@Transactional
+	public void deprogress(Long userId, Long boardId) {
+		// 공동구매 진행 취소 권한 확인 (게시자만 가능)
+		authentication.isPromoter(userId, boardId);
+		// 공동구매의 진행상태에 따른 진행 취소 가능 여부 확인
+		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(boardId);
+		if (groupbuyingBoard.getStatus() != Status.ONGOING) {
+			throw new IllegalStateException();
+		}
+		// 공동구매의 진행상태를 GATHERING으로 변경
+		groupbuyingBoard.updateStatus(Status.GATHERING);
+	}
 }
