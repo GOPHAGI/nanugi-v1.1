@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.gophagi.nanugi.common.util.area.Areas;
+import com.gophagi.nanugi.common.util.file.dto.PhotoDTO;
 import com.gophagi.nanugi.groupbuying.constant.Category;
 import com.gophagi.nanugi.groupbuying.constant.Status;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
@@ -33,11 +34,12 @@ public class GroupbuyingBoardDTO {
 	private Integer limitedNumberOfParticipants;
 	private String description;
 	private Integer viewCount;
+	private List<PhotoDTO> photos;
 
 	@Builder
 	public GroupbuyingBoardDTO(Long id, String title, Category category, Status status, Integer price, String url,
 		Areas deliveryArea, String deliveryAddress, String deliveryDetailAddress, LocalDateTime expirationDate,
-		Integer limitedNumberOfParticipants, String description, Integer viewCount) {
+		Integer limitedNumberOfParticipants, String description, Integer viewCount, List<PhotoDTO> photos) {
 		this.id = id;
 		this.title = title;
 		this.category = category;
@@ -51,6 +53,7 @@ public class GroupbuyingBoardDTO {
 		this.limitedNumberOfParticipants = limitedNumberOfParticipants;
 		this.description = description;
 		this.viewCount = viewCount;
+		this.photos = photos;
 	}
 
 	public static GroupbuyingBoardDTO toGroupbuyingBoardDTO(GroupbuyingBoard groupbuyingBoard) {
@@ -67,6 +70,7 @@ public class GroupbuyingBoardDTO {
 			.limitedNumberOfParticipants(groupbuyingBoard.getLimitedNumberOfParticipants())
 			.description(groupbuyingBoard.getDescription())
 			.viewCount(groupbuyingBoard.getViewCount())
+			.photos(PhotoDTO.toPhotoDTOs(groupbuyingBoard.getPhotos()))
 			.build();
 	}
 

@@ -1,19 +1,19 @@
 package com.gophagi.nanugi.groupbuying.service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.gophagi.nanugi.common.util.authentication.CommonAuthentication;
+import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.common.util.file.service.FileService;
 import com.gophagi.nanugi.groupbuying.constant.Status;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
 import com.gophagi.nanugi.groupbuying.domain.Participant;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
+import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardUpdateDTO;
 import com.gophagi.nanugi.groupbuying.dto.ParticipantDTO;
 import com.gophagi.nanugi.groupbuying.exception.DuplicateParticipationException;
 import com.gophagi.nanugi.groupbuying.exception.InvalidGroupbuyingBoardInstanceException;
@@ -36,18 +36,15 @@ public class GroupbuyingBoardCommandService {
 	}
 
 	@Transactional
-	public void create(GroupbuyingBoardDTO dto, List<MultipartFile> files, Long userId) {
-		if (Objects.isNull(dto)) {
-			throw new NullPointerException("dto is empty");
-		}
+	public void create(GroupbuyingBoardDTO dto, Long userId) {
 		try {
 			GroupbuyingBoard groupbuyingBoard = GroupbuyingBoard.toGroupbuyingBoard(dto);
 
 			repository.save(groupbuyingBoard);
 
-			participantService.createAsPromoter(userId, groupbuyingBoard);
+			fileService.saveAllPhotos(Photo.findNewPhotos(dto, groupbuyingBoard));
 
-			fileService.saveFiles(userId, groupbuyingBoard, files);
+			participantService.createAsPromoter(userId, groupbuyingBoard);
 
 		} catch (Exception exception) {
 			throw new InvalidGroupbuyingBoardInstanceException();
@@ -55,14 +52,14 @@ public class GroupbuyingBoardCommandService {
 	}
 
 	@Transactional
-	public void update(GroupbuyingBoardDTO dto, List<MultipartFile> files, List<Long> deletePhotoIdList, Long userId) {
-		if (Objects.isNull(dto)) {
-			throw new NullPointerException("dto is empty");
-		}
-		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(dto.getId());
-		groupbuyingBoard.update(dto);
+	public void update(GroupbuyingBoardUpdateDTO dto, Long userId) {
 
-		fileService.updateFiles(dto, files, deletePhotoIdList, userId);
+		authentication.hasAuthority(userId,dto.getId());
+
+		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(dto.getId());
+		groupbuyingBoard.deletePhoto(dto.getDeletePhotoIdList());
+		groupbuyingBoard.update(dto);
+		fileService.saveAllPhotos(Photo.findNewPhotos(dto,groupbuyingBoard));
 	}
 
 	@Transactional

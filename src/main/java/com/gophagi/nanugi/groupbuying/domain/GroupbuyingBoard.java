@@ -1,7 +1,10 @@
 package com.gophagi.nanugi.groupbuying.domain;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,7 +49,6 @@ public class GroupbuyingBoard extends BaseTime {
 	private Integer viewCount;
 	@OneToMany(mappedBy = "groupbuyingBoard", orphanRemoval = true)
 	private List<Participant> participants;
-
 	@OneToMany(mappedBy = "groupbuyingBoard", orphanRemoval = true)
 	private List<Photo> photos;
 
@@ -120,5 +122,22 @@ public class GroupbuyingBoard extends BaseTime {
 			}
 		}
 		return false;
+	}
+
+	public void deletePhoto(List<Long> deletePhotoIdList) {
+		if (Objects.isNull(deletePhotoIdList)) {
+			return;
+		}
+
+		Map<Long, Photo> test = new HashMap<>();
+		for (int i = 0; i < photos.size(); i++) {
+			test.put(photos.get(i).getFileId(), photos.get(i));
+		}
+
+		for (Long deletePhotoId : deletePhotoIdList) {
+			if (test.containsKey(deletePhotoId)) {
+				photos.remove(test.get(deletePhotoId));
+			}
+		}
 	}
 }
