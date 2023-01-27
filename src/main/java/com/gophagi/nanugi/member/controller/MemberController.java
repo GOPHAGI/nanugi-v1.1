@@ -1,5 +1,6 @@
 package com.gophagi.nanugi.member.controller;
 
+import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardQueryService;
 import com.gophagi.nanugi.member.dto.MemberDTO;
@@ -7,10 +8,8 @@ import com.gophagi.nanugi.member.dto.MemberGroupbuyingBoardDTO;
 import com.gophagi.nanugi.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Slf4j
@@ -22,9 +21,8 @@ public class MemberController {
     private final MemberService memberService;
     private final GroupbuyingBoardQueryService groupbuyingBoardQueryService;
     @RequestMapping
-    public MemberDTO memberInfo(HttpSession session){
-
-        Long userId = (Long) session.getAttribute("userId");
+    public MemberDTO memberInfo(@CookieValue String token){
+        Long userId = JwtTokenProvider.getUserIdFromJwt(token);
         MemberDTO member = memberService.getMemberById(userId);
 
         return member;

@@ -5,6 +5,7 @@ import com.gophagi.nanugi.member.dto.KakaoInfo;
 import com.gophagi.nanugi.member.dto.KakaoToken;
 import com.gophagi.nanugi.member.dto.LoginInfoDTO;
 import com.gophagi.nanugi.member.dto.MemberDTO;
+import com.gophagi.nanugi.member.exception.MemberNotFoundExcepion;
 import com.gophagi.nanugi.member.service.KakaoService;
 import com.gophagi.nanugi.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Slf4j
@@ -26,7 +29,7 @@ public class KakaoController {
 
     @GetMapping("/login")
     @ResponseBody
-    public LoginInfoDTO getKakaoAccount(@RequestParam("code") String code, HttpSession session,Model model) {
+    public LoginInfoDTO getKakaoAccount(@RequestParam("code") String code, HttpServletResponse response) {
         log.info("code = {}", code);
 
         //코드로 엑세스 토큰 받기
@@ -38,40 +41,44 @@ public class KakaoController {
         log.info("kakaoInfo = {}", kakaoInfo);
 
         //카카오 사용자 정보로 회원 정보 조회후 로그인
-        MemberDTO LoginMember = memberService.getMemberByKakao(kakaoInfo);
+        MemberDTO loginMember = memberService.getMemberByKakao(kakaoInfo);
 
-        if(LoginMember != null){
+        if(loginMember != null){
             //카카오 엑세스 토큰 만료
             kakaoService.kakaoLogout(kakaoToken);
 
-            //로그인 성공 처리 토큰 발생
-            return LoginInfoDTO.builder().userId(LoginMember.getId()).nickname(LoginMember.getNickname())
-                    .token(jwtTokenProvider.generateToken(LoginMember.getNickname())).build();
+            //jwt토큰 생성
+            String token = jwtTokenProvider.generateToken(loginMember.getId(),loginMember.getNickname());
 
-           // session.setAttribute("userId", LoginMember.getId());
-           // session.setAttribute("kakaoToken", kakaoToken);
-           // model.addAttribute("LoginMember",LoginMember);
+            //쿠키에 jwt토큰 저장
+            Cookie cookie = new Cookie("token", token);
+            cookie.setMaxAge(1000 * 60 * 60 );
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+
+            return LoginInfoDTO.toLoginInfoDTO(loginMember,token);
+
+
+        }else{
+            throw new MemberNotFoundExcepion();
         }
 
-        //log.info("session id:{}", session.getId());
-        //log.info("session.userId = {}", session.getAttribute("userId"));
-        //log.info("session.kakaoToken = {}", session.getAttribute("kakaoToken"));
-       // return "login success";
-        return null;
     }
 
     @GetMapping("/logout")
-    public String kakaoLogout(HttpSession session){
+    public String kakaoLogout(HttpServletResponse response){
 
-        //세션 로그아웃
-        kakaoService.kakaoLogout((KakaoToken)session.getAttribute("kakaoToken"));
-        session.removeAttribute("userId");
-        session.removeAttribute("kakaoToken");
+       //쿠키에서 삭제
+        Cookie cookie = new Cookie("token", null);
+        //세션 쿠키이므로 웹브라우저 종료시 서버에서 해당 쿠키의 종료 날짜를 0으로 지정
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
 
-        log.info("session.userId = {}", session.getAttribute("userId"));
-        log.info("session.kakaoToken = {}", session.getAttribute("kakaoToken"));
-
-        return "logout success";
-
+        return "ok";
     }
+
+
 }
