@@ -40,7 +40,6 @@ public class ParticipantDTO {
 		return ParticipantDTO.builder()
 			.id(participant.getId())
 			.member(MemberDTO.toMemberDTO(participant.getMember()))
-			.groupbuyingBoard(GroupbuyingBoardDTO.toGroupbuyingBoardDTO(participant.getGroupbuyingBoard()))
 			.role(participant.getRole())
 			.build();
 	}

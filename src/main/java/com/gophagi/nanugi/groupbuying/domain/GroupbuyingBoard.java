@@ -1,6 +1,5 @@
 package com.gophagi.nanugi.groupbuying.domain;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,9 +46,8 @@ public class GroupbuyingBoard extends BaseTime {
 	private Integer price;
 	@URL(message = "It's not a valid url")
 	private String url;
-	private String deliveryAddress;
-	private String deliveryDetailAddress;
-	private LocalDateTime expirationDate;
+	private String regionCode;
+	private String wishLocationAddress;
 	private Integer limitedNumberOfParticipants;
 	private String description;
 	private Integer viewCount;
@@ -61,8 +59,8 @@ public class GroupbuyingBoard extends BaseTime {
 
 	@Builder
 	public GroupbuyingBoard(Long id, String title, Category category, Status status, Integer price,
-		String url, String deliveryAddress, String deliveryDetailAddress,
-		LocalDateTime expirationDate, Integer limitedNumberOfParticipants, String description,
+		String url, String regionCode, String wishLocationAddress,
+		Integer limitedNumberOfParticipants, String description,
 		Integer viewCount, List<Participant> participants, List<Photo> photos) {
 		this.id = id;
 		this.title = title;
@@ -70,9 +68,8 @@ public class GroupbuyingBoard extends BaseTime {
 		this.status = status;
 		this.price = price;
 		this.url = url;
-		this.deliveryAddress = deliveryAddress;
-		this.deliveryDetailAddress = deliveryDetailAddress;
-		this.expirationDate = expirationDate;
+		this.regionCode = regionCode;
+		this.wishLocationAddress = wishLocationAddress;
 		this.limitedNumberOfParticipants = limitedNumberOfParticipants;
 		this.description = description;
 		this.viewCount = viewCount;
@@ -83,7 +80,6 @@ public class GroupbuyingBoard extends BaseTime {
 	@PrePersist
 	public void prePersist() {
 		this.status = Status.ONGOING;
-		this.expirationDate = LocalDateTime.now().plusDays(7);
 		this.viewCount = 0;
 	}
 
@@ -95,9 +91,8 @@ public class GroupbuyingBoard extends BaseTime {
 			.status(dto.getStatus())
 			.price(dto.getPrice())
 			.url(dto.getUrl())
-			.deliveryAddress(dto.getDeliveryAddress())
-			.deliveryDetailAddress(dto.getDeliveryDetailAddress())
-			.expirationDate(dto.getExpirationDate())
+			.regionCode(dto.getRegionCode())
+			.wishLocationAddress(dto.getWishLocationAddress())
 			.limitedNumberOfParticipants(dto.getLimitedNumberOfParticipants())
 			.description(dto.getDescription())
 			.viewCount(dto.getViewCount())
@@ -110,9 +105,8 @@ public class GroupbuyingBoard extends BaseTime {
 		this.status = dto.getStatus();
 		this.price = dto.getPrice();
 		this.url = dto.getUrl();
-		this.deliveryAddress = dto.getDeliveryAddress();
-		this.deliveryDetailAddress = dto.getDeliveryDetailAddress();
-		this.expirationDate = dto.getExpirationDate();
+		this.regionCode = dto.getRegionCode();
+		this.wishLocationAddress = dto.getWishLocationAddress();
 		this.limitedNumberOfParticipants = dto.getLimitedNumberOfParticipants();
 		this.description = dto.getDescription();
 		this.viewCount = dto.getViewCount();

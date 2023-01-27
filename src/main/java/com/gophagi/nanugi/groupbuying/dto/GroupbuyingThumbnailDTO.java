@@ -1,6 +1,5 @@
 package com.gophagi.nanugi.groupbuying.dto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,17 +25,14 @@ public class GroupbuyingThumbnailDTO {
 	private Category category;
 	private Status status;
 	private Integer price;
-	private String deliveryAddress;
-	private String deliveryDetailAddress;
-	private LocalDateTime expirationDate;
+	private String regionCode;
+	private String wishLocationAddress;
 	private int limitedNumberOfParticipants;
 	private int numberOfParticipants;
 
 	@Builder
 	public GroupbuyingThumbnailDTO(Long id, PhotoDTO photo, String title, Category category, Status status,
-		Integer price,
-		String deliveryAddress, String deliveryDetailAddress, LocalDateTime expirationDate,
-		int limitedNumberOfParticipants,
+		Integer price, String regionCode, String wishLocationAddress, int limitedNumberOfParticipants,
 		int numberOfParticipants) {
 		this.id = id;
 		this.photo = photo;
@@ -44,9 +40,8 @@ public class GroupbuyingThumbnailDTO {
 		this.category = category;
 		this.status = status;
 		this.price = price;
-		this.deliveryAddress = deliveryAddress;
-		this.deliveryDetailAddress = deliveryDetailAddress;
-		this.expirationDate = expirationDate;
+		this.regionCode = regionCode;
+		this.wishLocationAddress = wishLocationAddress;
 		this.limitedNumberOfParticipants = limitedNumberOfParticipants;
 		this.numberOfParticipants = numberOfParticipants;
 	}
@@ -59,9 +54,8 @@ public class GroupbuyingThumbnailDTO {
 			.category(groupbuyingBoard.getCategory())
 			.status(groupbuyingBoard.getStatus())
 			.price(groupbuyingBoard.getPrice())
-			.deliveryAddress(groupbuyingBoard.getDeliveryAddress())
-			.deliveryDetailAddress(groupbuyingBoard.getDeliveryDetailAddress())
-			.expirationDate(groupbuyingBoard.getExpirationDate())
+			.regionCode(groupbuyingBoard.getRegionCode())
+			.wishLocationAddress(groupbuyingBoard.getWishLocationAddress())
 			.limitedNumberOfParticipants(groupbuyingBoard.getLimitedNumberOfParticipants())
 			.numberOfParticipants(groupbuyingBoard.getParticipants().size())
 			.build();
