@@ -31,37 +31,41 @@ public class GroupbuyingBoardQueryService {
 
 	@Transactional
 	public GroupbuyingBoardDTO retrieve(Long boardId) {
-		GroupbuyingBoard groupbuyingBoard = repository.findById(boardId)
-			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException());
-		return GroupbuyingBoardDTO.toGroupbuyingBoardDTO(groupbuyingBoard);
+		return GroupbuyingBoardDTO.toGroupbuyingBoardDTO(getGroupbuyingBoard(boardId));
 	}
 
 	@Transactional
 	public List<GroupbuyingBoardDTO> searchGroupbuyingBoardByUserId(Long userId) {
+
 		List<ParticipantDTO> participants = participantService.retrieveByUserId(userId);
 
 		List<GroupbuyingBoardDTO> groupbuyingBoards = new ArrayList<>();
-		for (ParticipantDTO dto : participants) {
-			groupbuyingBoards.add(dto.getGroupbuyingBoard());
+		for (ParticipantDTO participantDTO : participants) {
+			groupbuyingBoards.add(participantDTO.getGroupbuyingBoard());
 		}
+
 		return groupbuyingBoards;
 	}
 
 	@Transactional
 	public List<GroupbuyingBoardDTO> searchGroupbuyingBoardByUserIdAndRole(Long userId, Role role) {
+
 		List<ParticipantDTO> participants = participantService.retrieveByUserIdAndRole(userId, role);
 
 		List<GroupbuyingBoardDTO> groupbuyingBoards = new ArrayList<>();
 		for (ParticipantDTO dto : participants) {
 			groupbuyingBoards.add(dto.getGroupbuyingBoard());
 		}
+
 		return groupbuyingBoards;
 	}
 
 	@Transactional
 	public Page<GroupbuyingThumbnailDTO> retrieveList(int page) {
+
 		PageRequest pageRequest = PageRequest.of(page, 20);
 		Page<GroupbuyingBoard> groupbuyingBoards = repository.findAll(pageRequest);
+
 		return new PageImpl<>(
 			GroupbuyingThumbnailDTO.toGroupbuyingThumbnailDTOs(groupbuyingBoards.getContent()),
 			pageRequest, groupbuyingBoards.getTotalElements());
@@ -69,16 +73,22 @@ public class GroupbuyingBoardQueryService {
 
 	@Transactional
 	public Page<GroupbuyingThumbnailDTO> retrieveCategoryList(Category category, int page) {
+
 		PageRequest pageRequest = PageRequest.of(page, 20);
 		Page<GroupbuyingBoard> groupbuyingBoards = repository.findByCategory(category, pageRequest);
+
 		return new PageImpl<>(
 			GroupbuyingThumbnailDTO.toGroupbuyingThumbnailDTOs(groupbuyingBoards.getContent()),
 			pageRequest, groupbuyingBoards.getTotalElements());
 	}
 
+	@Transactional
 	public BoardIdAndTitleDTO retrieveBoardIdAndTitleDTO(Long boardId) {
-		GroupbuyingBoard groupbuyingBoard = repository.findById(boardId)
+		return BoardIdAndTitleDTO.toGroupbuyingBoardDTO(getGroupbuyingBoard(boardId));
+	}
+
+	private GroupbuyingBoard getGroupbuyingBoard(Long boardId) {
+		return repository.findById(boardId)
 			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException());
-		return BoardIdAndTitleDTO.toGroupbuyingBoardDTO(groupbuyingBoard);
 	}
 }

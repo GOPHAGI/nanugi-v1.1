@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Status {
-	ONGOING("진행중"), DONE("완료");
+	GATHERING("모집중"), ONGOING("모집완료"), DONE("진행완료");
 
-	String name;
+	final String name;
 
 	Status(String name) {
 		this.name = name;
@@ -20,9 +20,11 @@ public enum Status {
 	@JsonCreator
 	public static Status fromValue(String value) {
 		switch (value) {
-			case "진행중":
+			case "모집중":
+				return Status.GATHERING;
+			case "모집완료":
 				return Status.ONGOING;
-			case "완료":
+			case "진행완료":
 				return Status.DONE;
 		}
 		return Status.ONGOING;
