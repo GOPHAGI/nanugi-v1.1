@@ -24,25 +24,20 @@ public class FileService {
 	@Autowired
 	private final FileRepository fileRepository;
 
-	public void saveFiles(Long userId, GroupbuyingBoard groupbuyingBoard, List<MultipartFile> files) {
+	public List<PhotoDTO> saveFiles(Long userId, List<MultipartFile> files) {
 		//List<MultipartFile>을 List<PhotoDTO>으로 변경하고 S3에 업로드
-		List<PhotoDTO> uploadItems = fileUtil.storeFiles(userId, files);
+		return fileUtil.storeFiles(userId, files);
 
-		//DB에 파일 정보 저장
-		for (PhotoDTO uploadItem : uploadItems) {
-			saveFile(uploadItem, groupbuyingBoard);
-		}
 	}
 
-    public void deleteFiles(List<PhotoDTO> deleteFiles) {
+    public void deleteFiles(List<Long> deletePhotoIdList) {
+		if(deletePhotoIdList != null){
+			List<PhotoDTO> deletePhotoList = findAllById(deletePhotoIdList);
+			//s3에서 파일삭제
+			fileUtil.deleteFiles(deletePhotoList);
+		}
 
-        //s3에서 파일삭제
-        fileUtil.deleteFiles(deleteFiles);
 
-        //DB에서 파일삭제
-        for (PhotoDTO deleteFile : deleteFiles) {
-            deleteFile(deleteFile);
-        }
     }
 
 	/**
@@ -71,19 +66,15 @@ public class FileService {
         fileRepository.delete(Photo.toPhoto(photoDTO));
     }
 
-	public void updateFiles(GroupbuyingBoardDTO groupbuyingBoardDTO, List<MultipartFile> files, List<Long> deletePhotoIdList , Long userId) {
+	public void updateFiles(Long userId,List<MultipartFile> files, List<Long> deletePhotoIdList ) {
 
 		log.info("deletePhotoIdList : {}",deletePhotoIdList);
-		//id 리스트로 photoDto 리스트 받아오기
-		// 삭제한 이미지는 db랑 s3에서 지우기
-		if(deletePhotoIdList != null){
-			List<PhotoDTO> deletePhotoList = findAllById(deletePhotoIdList);
-			deleteFiles(deletePhotoList);
-		}
+		//s3에서 삭제
+		deleteFiles(deletePhotoIdList);
 
 		//새로 업로드한 이미지가 있으면 저장하기
 		if(files != null){
-			saveFiles(userId , GroupbuyingBoard.toGroupbuyingBoard(groupbuyingBoardDTO),files);
+			saveFiles(userId ,files);
 		}
 
 	}
