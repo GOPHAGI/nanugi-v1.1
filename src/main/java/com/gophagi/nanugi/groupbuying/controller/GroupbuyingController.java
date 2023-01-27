@@ -2,20 +2,25 @@ package com.gophagi.nanugi.groupbuying.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
 import com.gophagi.nanugi.groupbuying.constant.Category;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
-import com.gophagi.nanugi.groupbuying.dto.GroupbuyingThumbnailDTO;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardCommandService;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardQueryService;
+import com.gophagi.nanugi.groupbuying.vo.GroupbuyingBoardInsertVO;
+import com.gophagi.nanugi.groupbuying.vo.GroupbuyingBoardUpdateVO;
+import com.gophagi.nanugi.groupbuying.vo.GroupbuyingThumbnailVO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,22 +37,16 @@ public class GroupbuyingController {
 	}
 
 	@PostMapping(value = "${groupbuying.create-url}")
-	public void create(@RequestBody GroupbuyingBoardDTO dto, @CookieValue String token) {
-
+	public void create(@RequestBody GroupbuyingBoardInsertVO vo, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
-		commandService.create(dto, userId);
+		commandService.create(vo.toGroupbuyingBoardDTO(), userId);
 	}
-
-	/* json -> object deserializer 구현해야됨.
 
 	@PostMapping(value = "${groupbuying.update-url}")
-	public void update(@RequestBody GroupbuyingBoardUpdateDTO dto, @CookieValue String token) {
-
+	public void update(@Valid @RequestBody GroupbuyingBoardUpdateVO vo, @CookieValue String token) {
 		Long userId = Long.parseLong(JwtTokenProvider.getUserNameFromJwt(token));
-		commandService.update(dto, userId);
+		commandService.update(vo, userId);
 	}
-
-	*/
 
 	@PostMapping("${groupbuying.order-url}/{id}")
 	public void order(@PathVariable("id") Long id, @CookieValue String token) {
@@ -98,12 +97,12 @@ public class GroupbuyingController {
 	}
 
 	@GetMapping("${groupbuying.retrieve-list-url}/{page}")
-	public Page<GroupbuyingThumbnailDTO> retrieveList(@PathVariable("page") int page) {
+	public Page<GroupbuyingThumbnailVO> retrieveList(@PathVariable("page") int page) {
 		return queryService.retrieveList(page);
 	}
 
 	@GetMapping("${groupbuying.retrieve-url}")
-	public Page<GroupbuyingThumbnailDTO> retrieveCategoryList(Category category, int page) {
+	public Page<GroupbuyingThumbnailVO> retrieveCategoryList(@RequestParam Category category, int page) {
 		return queryService.retrieveCategoryList(category, page);
 	}
 }

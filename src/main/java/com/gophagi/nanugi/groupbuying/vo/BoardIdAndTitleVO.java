@@ -1,4 +1,4 @@
-package com.gophagi.nanugi.groupbuying.dto;
+package com.gophagi.nanugi.groupbuying.vo;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -15,7 +15,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class BoardIdAndTitleDTO {
+public class BoardIdAndTitleVO {
 
 	@NotNull(message = "id is not null")
 	private Long id;
@@ -24,13 +24,13 @@ public class BoardIdAndTitleDTO {
 	private String title;
 
 	@Builder
-	public BoardIdAndTitleDTO(Long id, String title) {
+	public BoardIdAndTitleVO(Long id, String title) {
 		this.id = id;
 		this.title = title;
 	}
 
-	public static BoardIdAndTitleDTO toGroupbuyingBoardDTO(GroupbuyingBoard groupbuyingBoard) {
-		return BoardIdAndTitleDTO.builder()
+	public static BoardIdAndTitleVO toBoardIdAndTitleVO(GroupbuyingBoard groupbuyingBoard) {
+		return BoardIdAndTitleVO.builder()
 			.id(groupbuyingBoard.getId())
 			.title(groupbuyingBoard.getTitle())
 			.build();

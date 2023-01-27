@@ -14,12 +14,12 @@ import com.gophagi.nanugi.groupbuying.constant.Status;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
 import com.gophagi.nanugi.groupbuying.domain.Participant;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
-import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardUpdateDTO;
 import com.gophagi.nanugi.groupbuying.dto.ParticipantDTO;
 import com.gophagi.nanugi.groupbuying.exception.DuplicateParticipationException;
 import com.gophagi.nanugi.groupbuying.exception.InvalidGroupbuyingBoardInstanceException;
 import com.gophagi.nanugi.groupbuying.exception.PersonnelLimitExceededException;
 import com.gophagi.nanugi.groupbuying.repository.GroupbuyingBoardRepository;
+import com.gophagi.nanugi.groupbuying.vo.GroupbuyingBoardUpdateVO;
 
 @Service
 public class GroupbuyingBoardCommandService {
@@ -52,20 +52,20 @@ public class GroupbuyingBoardCommandService {
 	}
 
 	@Transactional
-	public void update(GroupbuyingBoardUpdateDTO dto, Long userId) {
+	public void update(GroupbuyingBoardUpdateVO vo, Long userId) {
 		// 공동구매 수정 권한 확인 (게시자만 수정 가능)
-		authentication.isPromoter(userId, dto.getId());
+		authentication.isPromoter(userId, vo.getId());
 		// 공동구매의 진행상태에 따른 수정 가능 여부 확인
-		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(dto.getId());
+		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(vo.getId());
 		if (groupbuyingBoard.getStatus() != Status.GATHERING) {
 			throw new IllegalStateException(ErrorCode.CANNOT_UPDATE_BOARD.getMessage());
 		}
 		// 기존 이미지 리스트에서 삭제될 이미지 처리
-		groupbuyingBoard.deletePhoto(dto.getDeletePhotoIdList());
+		groupbuyingBoard.deletePhoto(vo.getDeletePhotoIdList());
 		// 공동구매 변경내역 업데이트
-		groupbuyingBoard.update(dto);
+		groupbuyingBoard.update(vo.toGroupbuyingBoardDTO());
 		// 새로운 이미지 파일 저장 (공동구매 - 이미지 파일)
-		fileService.saveAllPhotos(Photo.findAndSetNewPhotos(dto, groupbuyingBoard));
+		fileService.saveAllPhotos(Photo.findAndSetNewPhotos(vo.toGroupbuyingBoardDTO(), groupbuyingBoard));
 	}
 
 	@Transactional

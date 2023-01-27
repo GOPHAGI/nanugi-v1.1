@@ -1,4 +1,4 @@
-package com.gophagi.nanugi.groupbuying.dto;
+package com.gophagi.nanugi.groupbuying.vo;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +18,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class GroupbuyingThumbnailDTO {
+public class GroupbuyingThumbnailVO {
 	private Long id;
 	private PhotoDTO photo;
 	private String title;
@@ -31,7 +31,7 @@ public class GroupbuyingThumbnailDTO {
 	private int numberOfParticipants;
 
 	@Builder
-	public GroupbuyingThumbnailDTO(Long id, PhotoDTO photo, String title, Category category, Status status,
+	public GroupbuyingThumbnailVO(Long id, PhotoDTO photo, String title, Category category, Status status,
 		Integer price, String regionCode, String wishLocationAddress, int limitedNumberOfParticipants,
 		int numberOfParticipants) {
 		this.id = id;
@@ -46,8 +46,8 @@ public class GroupbuyingThumbnailDTO {
 		this.numberOfParticipants = numberOfParticipants;
 	}
 
-	public static GroupbuyingThumbnailDTO toGroupbuyingThumbnailDTO(GroupbuyingBoard groupbuyingBoard) {
-		return GroupbuyingThumbnailDTO.builder()
+	public static GroupbuyingThumbnailVO toGroupbuyingThumbnailVO(GroupbuyingBoard groupbuyingBoard) {
+		return GroupbuyingThumbnailVO.builder()
 			.id(groupbuyingBoard.getId())
 			.photo(PhotoDTO.toPhotoDTO(groupbuyingBoard.getPhotos().get(0)))
 			.title(groupbuyingBoard.getTitle())
@@ -61,9 +61,9 @@ public class GroupbuyingThumbnailDTO {
 			.build();
 	}
 
-	public static List<GroupbuyingThumbnailDTO> toGroupbuyingThumbnailDTOs(List<GroupbuyingBoard> groupbuyingBoards) {
+	public static List<GroupbuyingThumbnailVO> toGroupbuyingThumbnailVOs(List<GroupbuyingBoard> groupbuyingBoards) {
 		return groupbuyingBoards.stream()
-			.map(GroupbuyingThumbnailDTO::toGroupbuyingThumbnailDTO)
+			.map(GroupbuyingThumbnailVO::toGroupbuyingThumbnailVO)
 			.collect(Collectors.toList());
 	}
 

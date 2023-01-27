@@ -13,12 +13,12 @@ import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.groupbuying.constant.Category;
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
-import com.gophagi.nanugi.groupbuying.dto.BoardIdAndTitleDTO;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
-import com.gophagi.nanugi.groupbuying.dto.GroupbuyingThumbnailDTO;
 import com.gophagi.nanugi.groupbuying.dto.ParticipantDTO;
 import com.gophagi.nanugi.groupbuying.exception.InvalidGroupbuyingBoardInstanceException;
 import com.gophagi.nanugi.groupbuying.repository.GroupbuyingBoardRepository;
+import com.gophagi.nanugi.groupbuying.vo.BoardIdAndTitleVO;
+import com.gophagi.nanugi.groupbuying.vo.GroupbuyingThumbnailVO;
 
 @Service
 public class GroupbuyingBoardQueryService {
@@ -48,28 +48,28 @@ public class GroupbuyingBoardQueryService {
 	}
 
 	@Transactional
-	public Page<GroupbuyingThumbnailDTO> retrieveList(int page) {
+	public Page<GroupbuyingThumbnailVO> retrieveList(int page) {
 		PageRequest pageRequest = PageRequest.of(page, 20);
 		Page<GroupbuyingBoard> groupbuyingBoards = repository.findAll(pageRequest);
 
 		return new PageImpl<>(
-			GroupbuyingThumbnailDTO.toGroupbuyingThumbnailDTOs(groupbuyingBoards.getContent()),
+			GroupbuyingThumbnailVO.toGroupbuyingThumbnailVOs(groupbuyingBoards.getContent()),
 			pageRequest, groupbuyingBoards.getTotalElements());
 	}
 
 	@Transactional
-	public Page<GroupbuyingThumbnailDTO> retrieveCategoryList(Category category, int page) {
+	public Page<GroupbuyingThumbnailVO> retrieveCategoryList(Category category, int page) {
 		PageRequest pageRequest = PageRequest.of(page, 20);
 		Page<GroupbuyingBoard> groupbuyingBoards = repository.findByCategory(category, pageRequest);
 
 		return new PageImpl<>(
-			GroupbuyingThumbnailDTO.toGroupbuyingThumbnailDTOs(groupbuyingBoards.getContent()),
+			GroupbuyingThumbnailVO.toGroupbuyingThumbnailVOs(groupbuyingBoards.getContent()),
 			pageRequest, groupbuyingBoards.getTotalElements());
 	}
 
 	@Transactional
-	public BoardIdAndTitleDTO retrieveBoardIdAndTitleDTO(Long boardId) {
-		return BoardIdAndTitleDTO.toGroupbuyingBoardDTO(getGroupbuyingBoard(boardId));
+	public BoardIdAndTitleVO retrieveBoardIdAndTitleVO(Long boardId) {
+		return BoardIdAndTitleVO.toBoardIdAndTitleVO(getGroupbuyingBoard(boardId));
 	}
 
 	private GroupbuyingBoard getGroupbuyingBoard(Long boardId) {

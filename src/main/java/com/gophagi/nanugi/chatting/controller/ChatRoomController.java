@@ -16,9 +16,9 @@ import com.gophagi.nanugi.chatting.dto.ChatRoom;
 import com.gophagi.nanugi.chatting.repository.ChatRoomRepository;
 import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
 import com.gophagi.nanugi.common.util.authentication.CommonAuthentication;
-import com.gophagi.nanugi.groupbuying.dto.BoardIdAndTitleDTO;
 import com.gophagi.nanugi.groupbuying.exception.InvalidGroupbuyingBoardInstanceException;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardQueryService;
+import com.gophagi.nanugi.groupbuying.vo.BoardIdAndTitleVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -54,9 +54,9 @@ public class ChatRoomController {
 
 		authentication.isPromoter(userId, boardId);
 
-		BoardIdAndTitleDTO dto = groupbuyingBoardQueryService.retrieveBoardIdAndTitleDTO(boardId);
+		BoardIdAndTitleVO vo = groupbuyingBoardQueryService.retrieveBoardIdAndTitleVO(boardId);
 
-		return chatRoomRepository.createChatRoom(dto);
+		return chatRoomRepository.createChatRoom(vo);
 	}
 
 	// 채팅방 입장 화면
