@@ -55,8 +55,12 @@ public class GroupbuyingBoardCommandService {
 	public void update(GroupbuyingBoardUpdateDTO dto, Long userId) {
 		// 공동구매 수정 권한 확인 (게시자만 수정 가능)
 		authentication.isPromoter(userId,dto.getId());
-		// 기존 이미지 리스트에서 삭제될 이미지 처리
+		// 공동구매의 진행상태에 따른 수정 가능 여부 확인
 		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(dto.getId());
+		if (groupbuyingBoard.getStatus() != Status.GATHERING) {
+			throw new IllegalStateException(ErrorCode.CANNOT_UPDATE_BOARD.getMessage());
+		}
+		// 기존 이미지 리스트에서 삭제될 이미지 처리
 		groupbuyingBoard.deletePhoto(dto.getDeletePhotoIdList());
 		// 공동구매 변경내역 업데이트
 		groupbuyingBoard.update(dto);
@@ -124,4 +128,6 @@ public class GroupbuyingBoardCommandService {
 			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException(ErrorCode.RETRIEVE_ERROR));
 	}
 
+	public void progress(Long userId, Long id) {
+	}
 }

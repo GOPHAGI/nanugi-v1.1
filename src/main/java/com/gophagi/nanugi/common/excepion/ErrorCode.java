@@ -24,6 +24,7 @@ public enum ErrorCode {
 	INVALID_ROLE(500, "500 Invalid ROLE", "유효하지 않은 ROLE 입니다."),
 	INVALID_CATEGORY(500, "500 Invalid CATEGORY", "유효하지 않은 카테고리 입니다."),
 	INVALID_STATUS(500, "500 Invalid STATUS", "유효하지 않은 STATUS 입니다."),
+	CANNOT_UPDATE_BOARD(500, "500 Cannot Update Board", "공동구매 게시글을 수정할 수 없습니다."),
 	CANNOT_CANCEL_REQUEST(500, "500 Cannot Cancel Board", "공동구매 요청을 취소할 수 없습니다."),
 	CANNOT_DELETE_BOARD(500, "500 Cannot Delete Board", "공동구매 게시글을 삭제할 수 없습니다."),
 	PARTICIPATION_DUPLICATION(500, "500 Participant Duplication", "중복된 참여 신청입니다."),

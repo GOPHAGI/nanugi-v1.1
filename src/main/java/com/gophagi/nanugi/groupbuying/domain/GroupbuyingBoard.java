@@ -79,7 +79,7 @@ public class GroupbuyingBoard extends BaseTime {
 
 	@PrePersist
 	public void prePersist() {
-		this.status = Status.ONGOING;
+		this.status = Status.GATHERING;
 		this.viewCount = 0;
 	}
 
