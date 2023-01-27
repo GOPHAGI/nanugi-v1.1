@@ -72,6 +72,11 @@ public class GroupbuyingBoardCommandService {
 	public void order(Long userId, Long boardId) {
 		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(boardId);
 
+		// 공동구매의 진행상태에 따른 신청 가능 여부 확인
+		if (groupbuyingBoard.getStatus() != Status.GATHERING) {
+			throw new IllegalStateException();
+		}
+
 		// 중복 요청 시 예외처리
 		if (groupbuyingBoard.participateInDuplicate(userId)) {
 			throw new DuplicateParticipationException(ErrorCode.PARTICIPATION_DUPLICATION);
