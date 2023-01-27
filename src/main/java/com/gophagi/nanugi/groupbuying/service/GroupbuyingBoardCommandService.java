@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.common.util.authentication.CommonAuthentication;
 import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.common.util.file.service.FileService;
@@ -47,7 +48,7 @@ public class GroupbuyingBoardCommandService {
 			participantService.createAsPromoter(userId, groupbuyingBoard);
 
 		} catch (Exception exception) {
-			throw new InvalidGroupbuyingBoardInstanceException();
+			throw new InvalidGroupbuyingBoardInstanceException(ErrorCode.INVALID_BOARD_INSTANCE);
 		}
 	}
 
@@ -115,7 +116,7 @@ public class GroupbuyingBoardCommandService {
 
 	private GroupbuyingBoard getGroupbuyingBoard(Long boardId) {
 		return repository.findById(boardId)
-			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException());
+			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException(ErrorCode.INVALID_BOARD_INSTANCE));
 	}
 
 }

@@ -2,6 +2,8 @@ package com.gophagi.nanugi.groupbuying.constant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.gophagi.nanugi.common.excepion.ErrorCode;
+import com.gophagi.nanugi.groupbuying.exception.InvalidStatusException;
 
 public enum Status {
 	GATHERING("모집중"), ONGOING("모집완료"), DONE("진행완료");
@@ -27,6 +29,6 @@ public enum Status {
 			case "진행완료":
 				return Status.DONE;
 		}
-		return Status.ONGOING;
+		throw new InvalidStatusException(ErrorCode.INVALID_STATUS);
 	}
 }

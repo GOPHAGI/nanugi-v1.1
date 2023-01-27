@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.groupbuying.constant.Category;
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
@@ -89,6 +90,6 @@ public class GroupbuyingBoardQueryService {
 
 	private GroupbuyingBoard getGroupbuyingBoard(Long boardId) {
 		return repository.findById(boardId)
-			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException());
+			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException(ErrorCode.INVALID_BOARD_INSTANCE));
 	}
 }

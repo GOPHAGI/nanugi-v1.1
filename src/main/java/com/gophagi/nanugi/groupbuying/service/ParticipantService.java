@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
 import com.gophagi.nanugi.groupbuying.domain.Participant;
@@ -35,7 +36,7 @@ public class ParticipantService {
 		try {
 			repository.save(participant);
 		} catch (Exception exception) {
-			throw new InvalidParticipantInstanceException();
+			throw new InvalidParticipantInstanceException(ErrorCode.INVALID_PARTICIPANT_INSTANCE);
 		}
 	}
 
@@ -51,7 +52,7 @@ public class ParticipantService {
 
 	public List<ParticipantDTO> retrieveByBoardId(Long boardId) {
 		List<Participant> participants = repository.findByGroupbuyingBoardId(boardId)
-			.orElseThrow(() -> new InvalidParticipantInstanceException());
+			.orElseThrow(() -> new InvalidParticipantInstanceException(ErrorCode.INVALID_PARTICIPANT_INSTANCE));
 
 		List<ParticipantDTO> participantDTOS = new ArrayList<>();
 		for (Participant participant : participants) {
@@ -62,7 +63,7 @@ public class ParticipantService {
 
 	public List<ParticipantDTO> retrieveByUserId(Long userId) {
 		List<Participant> participants = repository.findByMemberId(userId)
-			.orElseThrow(() -> new InvalidParticipantInstanceException());
+			.orElseThrow(() -> new InvalidParticipantInstanceException(ErrorCode.INVALID_PARTICIPANT_INSTANCE));
 
 		List<ParticipantDTO> participantDTOS = new ArrayList<>();
 		for (Participant participant : participants) {
@@ -73,7 +74,7 @@ public class ParticipantService {
 
 	public List<ParticipantDTO> retrieveByUserIdAndRole(Long userId, Role role) {
 		List<Participant> participants = repository.findByMemberIdAndRole(userId, role)
-			.orElseThrow(() -> new InvalidParticipantInstanceException());
+			.orElseThrow(() -> new InvalidParticipantInstanceException(ErrorCode.INVALID_PARTICIPANT_INSTANCE));
 
 		List<ParticipantDTO> participantDTOS = new ArrayList<>();
 		for (Participant participant : participants) {
