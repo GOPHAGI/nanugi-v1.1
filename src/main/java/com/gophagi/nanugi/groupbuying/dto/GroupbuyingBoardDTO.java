@@ -4,11 +4,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.URL;
+
 import com.gophagi.nanugi.common.util.area.Areas;
 import com.gophagi.nanugi.common.util.file.dto.PhotoDTO;
 import com.gophagi.nanugi.groupbuying.constant.Category;
 import com.gophagi.nanugi.groupbuying.constant.Status;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
+import com.gophagi.nanugi.groupbuying.validation.Insert;
+import com.gophagi.nanugi.groupbuying.validation.Update;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -21,17 +30,30 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class GroupbuyingBoardDTO {
+	@NotNull(message = "id is not null", groups = Update.class)
 	private Long id;
+	@NotBlank(message = "title is not blank", groups = {Insert.class, Update.class})
+	@Size(max = 255, message = "length is less than 255")
 	private String title;
+	@NotBlank(message = "category is not blank", groups = {Insert.class, Update.class})
 	private Category category;
+	@NotBlank(message = "status is not blank", groups = Insert.class)
 	private Status status;
+	@NotNull(message = "price is not null", groups = {Insert.class, Update.class})
+	@PositiveOrZero
 	private Integer price;
+	@NotBlank(message = "url is not blank", groups = {Insert.class, Update.class})
+	@URL(message = "it's not a valid URL")
 	private String url;
 	private Areas deliveryArea;
+	@NotBlank(message = "delivery address is not blank", groups = {Insert.class, Update.class})
 	private String deliveryAddress;
+	@NotBlank(message = "delivery detail address is not blank", groups = {Insert.class, Update.class})
 	private String deliveryDetailAddress;
 	private LocalDateTime expirationDate;
+	@NotNull(message = "limited number of participants is not null", groups = {Insert.class, Update.class})
 	private Integer limitedNumberOfParticipants;
+	@NotBlank(message = "description is not blank", groups = {Insert.class, Update.class})
 	private String description;
 	private Integer viewCount;
 	private List<PhotoDTO> photos;

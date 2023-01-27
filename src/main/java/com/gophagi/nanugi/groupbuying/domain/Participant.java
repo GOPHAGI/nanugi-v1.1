@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.Valid;
 
 import com.gophagi.nanugi.common.util.timestamp.BaseTime;
 import com.gophagi.nanugi.groupbuying.constant.Role;
@@ -24,8 +25,10 @@ public class Participant extends BaseTime {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@Valid
 	@ManyToOne
 	private Member member;
+	@Valid
 	@ManyToOne
 	private GroupbuyingBoard groupbuyingBoard;
 	@Enumerated(value = EnumType.STRING)

@@ -15,6 +15,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
+import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
+
+import org.hibernate.validator.constraints.URL;
 
 import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.common.util.timestamp.BaseTime;
@@ -39,7 +43,9 @@ public class GroupbuyingBoard extends BaseTime {
 	private Category category;
 	@Enumerated(value = EnumType.STRING)
 	private Status status;
+	@PositiveOrZero
 	private Integer price;
+	@URL(message = "It's not a valid url")
 	private String url;
 	private String deliveryAddress;
 	private String deliveryDetailAddress;
@@ -49,6 +55,7 @@ public class GroupbuyingBoard extends BaseTime {
 	private Integer viewCount;
 	@OneToMany(mappedBy = "groupbuyingBoard", orphanRemoval = true)
 	private List<Participant> participants;
+	@Valid
 	@OneToMany(mappedBy = "groupbuyingBoard", orphanRemoval = true)
 	private List<Photo> photos;
 

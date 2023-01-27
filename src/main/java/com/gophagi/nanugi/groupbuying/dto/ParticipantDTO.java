@@ -3,6 +3,8 @@ package com.gophagi.nanugi.groupbuying.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.Participant;
 import com.gophagi.nanugi.member.dto.MemberDTO;
@@ -20,7 +22,9 @@ import lombok.ToString;
 public class ParticipantDTO {
 
 	private Long id;
+	@Valid
 	private MemberDTO member;
+	@Valid
 	private GroupbuyingBoardDTO groupbuyingBoard;
 	private Role role;
 
