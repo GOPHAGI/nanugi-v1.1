@@ -1,7 +1,7 @@
 package com.gophagi.nanugi.groupbuying.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -78,10 +78,8 @@ public class GroupbuyingBoardQueryService {
 	}
 
 	private List<GroupbuyingBoardDTO> getGroupbuyingBoardDTOS(List<ParticipantDTO> participants) {
-		List<GroupbuyingBoardDTO> groupbuyingBoards = new ArrayList<>();
-		for (ParticipantDTO participantDTO : participants) {
-			groupbuyingBoards.add(participantDTO.getGroupbuyingBoard());
-		}
-		return groupbuyingBoards;
+		return participants.stream()
+			.map(ParticipantDTO::getGroupbuyingBoard)
+			.collect(Collectors.toList());
 	}
 }
