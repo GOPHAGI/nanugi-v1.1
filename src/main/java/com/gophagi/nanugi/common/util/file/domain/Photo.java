@@ -11,7 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.common.util.file.dto.PhotoDTO;
+import com.gophagi.nanugi.common.util.file.exception.NotFoundImageException;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
 import com.gophagi.nanugi.groupbuying.dto.GroupbuyingBoardDTO;
 
@@ -67,14 +69,14 @@ public class Photo {
 		this.groupbuyingBoard = groupbuyingBoard;
 	}
 
-	public static List<Photo> findNewPhotos(GroupbuyingBoardDTO groupbuyingBoardDTO,
+	public static List<Photo> findAndSetNewPhotos(GroupbuyingBoardDTO groupbuyingBoardDTO,
 		GroupbuyingBoard groupbuyingBoard) {
 
 		// 게시물에 이미지 파일 존재하지 않을 때 예외처리 (하나 이상의 이미지 파일 필요)
 		if (Objects.isNull(groupbuyingBoardDTO.getPhotos())) {
 			throw new NotFoundImageException(ErrorCode.NOT_FOUND_IMAGE);
 		}
-
+		// 새로운 사진 리스트와 공동구매 객체 연결 후 새로운 사진 리스트만 반환
 		List<Photo> newPhotos = new ArrayList<>();
 		for (PhotoDTO dto : groupbuyingBoardDTO.getPhotos()) {
 			if (Objects.isNull(dto.getFileId())) {

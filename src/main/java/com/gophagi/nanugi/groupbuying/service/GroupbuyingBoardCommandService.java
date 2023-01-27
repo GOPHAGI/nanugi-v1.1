@@ -42,9 +42,9 @@ public class GroupbuyingBoardCommandService {
 			GroupbuyingBoard groupbuyingBoard = GroupbuyingBoard.toGroupbuyingBoard(dto);
 
 			repository.save(groupbuyingBoard);
-
-			fileService.saveAllPhotos(Photo.findNewPhotos(dto, groupbuyingBoard));
-
+			// 이미지 파일 저장 (공동구매 - 이미지 파일)
+			fileService.saveAllPhotos(Photo.findAndSetNewPhotos(dto, groupbuyingBoard));
+			// 게시자로 공동구매 참여자 목록 추가
 			participantService.createAsPromoter(userId, groupbuyingBoard);
 
 		} catch (Exception exception) {
@@ -60,7 +60,8 @@ public class GroupbuyingBoardCommandService {
 		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(dto.getId());
 		groupbuyingBoard.deletePhoto(dto.getDeletePhotoIdList());
 		groupbuyingBoard.update(dto);
-		fileService.saveAllPhotos(Photo.findNewPhotos(dto,groupbuyingBoard));
+		// 새로운 이미지 파일 저장 (공동구매 - 이미지 파일)
+		fileService.saveAllPhotos(Photo.findAndSetNewPhotos(dto,groupbuyingBoard));
 	}
 
 	@Transactional

@@ -2,7 +2,6 @@ package com.gophagi.nanugi.common.util.file;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,9 +62,6 @@ public class PhotoTest {
 			.status(Status.GATHERING)
 			.price(10000)
 			.url("http://www.naver.com")
-			.deliveryAddress("서울시 종로구")
-			.deliveryDetailAddress("101-112")
-			.expirationDate(LocalDateTime.now())
 			.limitedNumberOfParticipants(3)
 			.description("설명이 들어가는 자리")
 			.viewCount(0)
@@ -110,9 +106,6 @@ public class PhotoTest {
 			.status(Status.GATHERING)
 			.price(10000)
 			.url("http://www.naver.com")
-			.deliveryAddress("서울시 종로구")
-			.deliveryDetailAddress("101-112")
-			.expirationDate(LocalDateTime.now())
 			.limitedNumberOfParticipants(3)
 			.description("설명이 들어가는 자리")
 			.viewCount(0)
@@ -122,7 +115,7 @@ public class PhotoTest {
 
 	@Test
 	void findNewPhotosWithNoNewPhotoTest() {
-		assertThat(Photo.findNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(0);
+		assertThat(Photo.findAndSetNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(0);
 	}
 
 	@Test
@@ -136,7 +129,7 @@ public class PhotoTest {
 			.fileUrl("http://www.naver.com")
 			.build();
 		groupbuyingBoardDTO.getPhotos().add(newPhoto);
-		assertThat(Photo.findNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(1);
+		assertThat(Photo.findAndSetNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(1);
 	}
 
 	@Test
@@ -152,19 +145,19 @@ public class PhotoTest {
 			.fileUrl("http://www.naver.com")
 			.build();
 		groupbuyingBoardDTO.getPhotos().add(newPhoto);
-		assertThat(Photo.findNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(1);
+		assertThat(Photo.findAndSetNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(1);
 	}
 
 	@Test
 	void findNewPhotosDTOPhotosIsNullTest() {
 		groupbuyingBoardDTO.setPhotos(null);
 		//assertThatThrownBy(()-> Photo.findNewPhotos(groupbuyingBoardDTO,groupbuyingBoard)).isInstanceOf(NullPointerException.class);
-		assertThat(Photo.findNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(0);
+		assertThat(Photo.findAndSetNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(0);
 	}
 
 	@Test
 	void findNewPhotosWithNoPhotosTest() {
 		groupbuyingBoardDTO.setPhotos(new ArrayList<>());
-		assertThat(Photo.findNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(0);
+		assertThat(Photo.findAndSetNewPhotos(groupbuyingBoardDTO, groupbuyingBoard).size()).isEqualTo(0);
 	}
 }
