@@ -17,13 +17,10 @@ public class CommonAuthentication {
 
 	public void hasAuthority(Long userId, Long boardId) {
 		try {
-
-			participantService.retrieveByUserIdAndBoardId(userId, boardId);
-
-		} catch (RuntimeException e) {
-
-			throw new NoAuthorityException();
-
+			// 공동구매 참여자(게시자 포함) 여부 확인
+			return participantService.retrieveByUserIdAndBoardId(userId, boardId);
+		} catch (InvalidParticipantInstanceException e) {
+			throw new NoAuthorityException(ErrorCode.RETRIEVE_ERROR);
 		}
 	}
 
@@ -35,7 +32,7 @@ public class CommonAuthentication {
 			return;
 		}
 
-		throw new NoAuthorityException();
+		throw new NoAuthorityException(ErrorCode.NOT_PROMOTER);
 	}
 
 	public ParticipantDTO isParticipant(Long userId, Long boardId) {
@@ -46,7 +43,7 @@ public class CommonAuthentication {
 			return participant;
 		}
 
-		throw new NoAuthorityException();
+		throw new NoAuthorityException(ErrorCode.NOT_PARTICIPANT);
 	}
 
 }

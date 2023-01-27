@@ -70,8 +70,9 @@ public class Photo {
 	public static List<Photo> findNewPhotos(GroupbuyingBoardDTO groupbuyingBoardDTO,
 		GroupbuyingBoard groupbuyingBoard) {
 
+		// 게시물에 이미지 파일 존재하지 않을 때 예외처리 (하나 이상의 이미지 파일 필요)
 		if (Objects.isNull(groupbuyingBoardDTO.getPhotos())) {
-			return new ArrayList<>();
+			throw new NotFoundImageException(ErrorCode.NOT_FOUND_IMAGE);
 		}
 
 		List<Photo> newPhotos = new ArrayList<>();

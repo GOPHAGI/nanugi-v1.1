@@ -90,6 +90,6 @@ public class GroupbuyingBoardQueryService {
 
 	private GroupbuyingBoard getGroupbuyingBoard(Long boardId) {
 		return repository.findById(boardId)
-			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException(ErrorCode.INVALID_BOARD_INSTANCE));
+			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException(ErrorCode.RETRIEVE_ERROR));
 	}
 }

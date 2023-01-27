@@ -48,7 +48,7 @@ public class GroupbuyingBoardCommandService {
 			participantService.createAsPromoter(userId, groupbuyingBoard);
 
 		} catch (Exception exception) {
-			throw new InvalidGroupbuyingBoardInstanceException(ErrorCode.INVALID_BOARD_INSTANCE);
+			throw new InvalidGroupbuyingBoardInstanceException(ErrorCode.INSERT_ERROR);
 		}
 	}
 
@@ -68,10 +68,10 @@ public class GroupbuyingBoardCommandService {
 		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(boardId);
 
 		if (groupbuyingBoard.participateInDuplicate(userId)) {
-			throw new DuplicateParticipationException();
+			throw new DuplicateParticipationException(ErrorCode.PARTICIPATION_DUPLICATION);
 		}
 		if (groupbuyingBoard.isFull()) {
-			throw new PersonnelLimitExceededException();
+			throw new PersonnelLimitExceededException(ErrorCode.PERSONNEL_LIMIT_EXCEEDED);
 		}
 		participantService.createAsParticipant(userId, groupbuyingBoard);
 	}
@@ -83,7 +83,7 @@ public class GroupbuyingBoardCommandService {
 		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(boardId);
 
 		if (groupbuyingBoard.getStatus() != Status.GATHERING) {
-			throw new IllegalStateException();
+			throw new IllegalStateException(ErrorCode.CANNOT_CANCEL_REQUEST.getMessage());
 		}
 
 		participantService.delete(dto.getId());
@@ -95,7 +95,10 @@ public class GroupbuyingBoardCommandService {
 		authentication.isPromoter(userId, boardId);
 
 		GroupbuyingBoard groupbuyingBoard = getGroupbuyingBoard(boardId);
-
+		if (groupbuyingBoard.getStatus() == Status.DONE) {
+			throw new IllegalStateException(ErrorCode.CANNOT_DELETE_BOARD.getMessage());
+		}
+		// 채팅방 삭제를 위해 참여자 id 리스트 반환
 		List<Long> participantIds = groupbuyingBoard.getParticipants()
 			.stream()
 			.map(Participant::getId)
@@ -116,7 +119,7 @@ public class GroupbuyingBoardCommandService {
 
 	private GroupbuyingBoard getGroupbuyingBoard(Long boardId) {
 		return repository.findById(boardId)
-			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException(ErrorCode.INVALID_BOARD_INSTANCE));
+			.orElseThrow(() -> new InvalidGroupbuyingBoardInstanceException(ErrorCode.RETRIEVE_ERROR));
 	}
 
 }
