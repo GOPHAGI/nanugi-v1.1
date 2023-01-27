@@ -18,4 +18,6 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 	Optional<List<Participant>> findByMemberIdAndRole(Long userId, Role role);
 
 	Optional<Participant> findByGroupbuyingBoardIdAndMemberId(Long boardId, Long userId);
+
+	void deleteByMemberId(Long id);
 }

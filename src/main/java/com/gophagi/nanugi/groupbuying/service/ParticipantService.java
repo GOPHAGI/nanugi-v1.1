@@ -70,8 +70,8 @@ public class ParticipantService {
 		return ParticipantDTO.toParticipantDTOs(participants);
 	}
 
-	public void deleteById(Long id) {
-		repository.deleteById(id);
+	public void deleteByMemberId(Long id) {
+		repository.deleteByMemberId(id);
 	}
 
 	@Transactional

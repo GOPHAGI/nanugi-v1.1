@@ -110,7 +110,7 @@ public class GroupbuyingBoardCommandService {
 			throw new IllegalStateException(ErrorCode.CANNOT_CANCEL_REQUEST.getMessage());
 		}
 		// 공동구매 참여자에서 제외 -> 취소 진행
-		participantService.deleteById(dto.getId());
+		participantService.deleteByMemberId(dto.getMember().getId());
 	}
 
 	@Transactional
@@ -125,7 +125,8 @@ public class GroupbuyingBoardCommandService {
 		// 채팅방 삭제를 위해 참여자 id 리스트 반환
 		List<Long> participantUserIds = groupbuyingBoard.getParticipants()
 			.stream()
-			.map(Participant::getId)
+			.map(Participant::getMember)
+			.map(Member::getId)
 			.collect(Collectors.toList());
 		// 공동구매 게시글 삭제 진행
 		repository.delete(groupbuyingBoard);
