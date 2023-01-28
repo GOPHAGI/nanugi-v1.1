@@ -1,11 +1,11 @@
 package com.gophagi.nanugi.groupbuying.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gophagi.nanugi.common.excepion.ErrorCode;
 import com.gophagi.nanugi.groupbuying.constant.Role;
 import com.gophagi.nanugi.groupbuying.domain.GroupbuyingBoard;
 import com.gophagi.nanugi.groupbuying.domain.Participant;
@@ -13,6 +13,7 @@ import com.gophagi.nanugi.groupbuying.dto.ParticipantDTO;
 import com.gophagi.nanugi.groupbuying.exception.InvalidParticipantInstanceException;
 import com.gophagi.nanugi.groupbuying.repository.ParticipantRepository;
 import com.gophagi.nanugi.member.domain.Member;
+import com.gophagi.nanugi.member.exception.InvalidMemberInstanceException;
 import com.gophagi.nanugi.member.repository.MemberRepository;
 
 @Service
@@ -26,70 +27,77 @@ public class ParticipantService {
 	}
 
 	public void createAsPromoter(Long userId, GroupbuyingBoard groupbuyingBoard) {
-		Member user = memberRepository.findById(userId).orElseThrow(() -> new RuntimeException("invalid user"));
+		// 사용자 정보 가져오기
+		Member user = getUserById(userId);
+		// 참여자(게시자) 정보 생성
 		Participant participant = Participant.builder()
 			.member(user)
 			.groupbuyingBoard(groupbuyingBoard)
 			.role(Role.PROMOTER)
 			.build();
 		try {
+			// 참여자(게시자) 정보 저장
 			repository.save(participant);
-		} catch (Exception exception) {
-			throw new InvalidParticipantInstanceException();
+		} catch (IllegalArgumentException exception) {
+			throw new InvalidParticipantInstanceException(ErrorCode.INSERT_ERROR);
 		}
 	}
 
 	public void createAsParticipant(Long userId, GroupbuyingBoard groupbuyingBoard) {
-		Member user = memberRepository.findById(userId).orElseThrow(() -> new RuntimeException("invalid user"));
+		// 사용자 정보 가져오기
+		Member user = getUserById(userId);
+		// 참여자 정보 생성
 		Participant participant = Participant.builder()
 			.member(user)
 			.groupbuyingBoard(groupbuyingBoard)
 			.role(Role.PARTICIPANT)
 			.build();
-		repository.save(participant);
-	}
-
-	public List<ParticipantDTO> retrieveByBoardId(Long boardId) {
-		List<Participant> participants = repository.findByGroupbuyingBoardId(boardId)
-			.orElseThrow(() -> new InvalidParticipantInstanceException());
-
-		List<ParticipantDTO> participantDTOS = new ArrayList<>();
-		for (Participant participant : participants) {
-			participantDTOS.add(ParticipantDTO.toParticipantDTO(participant));
+		try {
+			// 참여자 정보 저장
+			repository.save(participant);
+		} catch (IllegalArgumentException exception) {
+			throw new InvalidParticipantInstanceException(ErrorCode.INSERT_ERROR);
 		}
-		return participantDTOS;
 	}
 
 	public List<ParticipantDTO> retrieveByUserId(Long userId) {
-		List<Participant> participants = repository.findByMemberId(userId)
-			.orElseThrow(() -> new InvalidParticipantInstanceException());
-
-		List<ParticipantDTO> participantDTOS = new ArrayList<>();
-		for (Participant participant : participants) {
-			participantDTOS.add(ParticipantDTO.toParticipantDTO(participant));
-		}
-		return participantDTOS;
+		List<Participant> participants = getParticipantsByMemberId(userId);
+		return ParticipantDTO.toParticipantDTOs(participants);
 	}
 
 	public List<ParticipantDTO> retrieveByUserIdAndRole(Long userId, Role role) {
-		List<Participant> participants = repository.findByMemberIdAndRole(userId, role)
-			.orElseThrow(() -> new InvalidParticipantInstanceException());
-
-		List<ParticipantDTO> participantDTOS = new ArrayList<>();
-		for (Participant participant : participants) {
-			participantDTOS.add(ParticipantDTO.toParticipantDTO(participant));
-		}
-		return participantDTOS;
+		List<Participant> participants = getParticipantsByMemberIdAndRole(userId, role);
+		return ParticipantDTO.toParticipantDTOs(participants);
 	}
 
-	public void delete(Long id) {
-		repository.deleteById(id);
+	public void deleteByMemberId(Long id) {
+		repository.deleteByMemberId(id);
 	}
 
 	@Transactional
-	public ParticipantDTO retrieveByUserIdAndBoardId(Long userId, Long boardId) {
-		Participant participant = repository.findByGroupbuyingBoardIdAndMemberId(boardId, userId)
-			.orElseThrow(() -> new RuntimeException("해당 보드와 사용자 아이디가 일치하는 데이터가 존재하지 않음."));
+	public ParticipantDTO retrieveByUserIdAndBoardId(Long userId, Long boardId) throws
+		InvalidParticipantInstanceException {
+		Participant participant = getParticipantByMemberIdAndBoardId(userId, boardId);
 		return ParticipantDTO.toParticipantDTO(participant);
+	}
+
+	private Member getUserById(Long userId) {
+		return memberRepository.findById(userId)
+			.orElseThrow(() -> new InvalidMemberInstanceException(ErrorCode.RETRIEVE_ERROR));
+	}
+
+	private List<Participant> getParticipantsByMemberId(Long userId) {
+		return repository.findByMemberId(userId)
+			.orElseThrow(() -> new InvalidParticipantInstanceException(ErrorCode.RETRIEVE_ERROR));
+	}
+
+	private Participant getParticipantByMemberIdAndBoardId(Long userId, Long boardId) {
+		return repository.findByGroupbuyingBoardIdAndMemberId(boardId, userId)
+			.orElseThrow(() -> new InvalidParticipantInstanceException(ErrorCode.RETRIEVE_ERROR));
+	}
+
+	private List<Participant> getParticipantsByMemberIdAndRole(Long userId, Role role) {
+		return repository.findByMemberIdAndRole(userId, role)
+			.orElseThrow(() -> new InvalidParticipantInstanceException(ErrorCode.RETRIEVE_ERROR));
 	}
 }

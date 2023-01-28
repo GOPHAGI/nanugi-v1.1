@@ -1,4 +1,4 @@
-package com.gophagi.nanugi.groupbuying.dto;
+package com.gophagi.nanugi.groupbuying.vo;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,35 +19,31 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class ParticipantDTO {
+public class ParticipantVO {
 
 	private Long id;
 	@Valid
 	private MemberDTO member;
-	@Valid
-	private GroupbuyingBoardDTO groupbuyingBoard;
 	private Role role;
 
 	@Builder
-	public ParticipantDTO(Long id, MemberDTO member, GroupbuyingBoardDTO groupbuyingBoard, Role role) {
+	public ParticipantVO(Long id, MemberDTO member, Role role) {
 		this.id = id;
 		this.member = member;
-		this.groupbuyingBoard = groupbuyingBoard;
 		this.role = role;
 	}
 
-	public static ParticipantDTO toParticipantDTO(Participant participant) {
-		return ParticipantDTO.builder()
+	public static ParticipantVO toParticipantVO(Participant participant) {
+		return ParticipantVO.builder()
 			.id(participant.getId())
 			.member(MemberDTO.toMemberDTO(participant.getMember()))
-			.groupbuyingBoard(GroupbuyingBoardDTO.toGroupbuyingBoardDTO(participant.getGroupbuyingBoard()))
 			.role(participant.getRole())
 			.build();
 	}
 
-	public static List<ParticipantDTO> toParticipantDTOs(List<Participant> participants) {
+	public static List<ParticipantVO> toParticipantVOs(List<Participant> participants) {
 		return participants.stream()
-			.map(ParticipantDTO::toParticipantDTO)
+			.map(ParticipantVO::toParticipantVO)
 			.collect(Collectors.toList());
 	}
 }

@@ -14,7 +14,7 @@ import com.gophagi.nanugi.chatting.dto.ChatMessage;
 import com.gophagi.nanugi.chatting.repository.ChatRoomRepository;
 import com.gophagi.nanugi.chatting.service.ChatService;
 import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
-import com.gophagi.nanugi.common.util.authentication.CommonAuthentication;
+import com.gophagi.nanugi.common.auth.CommonAuthentication;
 import com.gophagi.nanugi.groupbuying.exception.NoAuthorityException;
 
 import lombok.RequiredArgsConstructor;

@@ -14,7 +14,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
 import com.gophagi.nanugi.chatting.dto.ChatRoom;
-import com.gophagi.nanugi.groupbuying.dto.BoardIdAndTitleDTO;
+import com.gophagi.nanugi.groupbuying.vo.BoardIdAndTitleVO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -68,9 +68,9 @@ public class ChatRoomRepository {
 	/**
 	 * 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
 	 * */
-	public ChatRoom createChatRoom(BoardIdAndTitleDTO dto) {
+	public ChatRoom createChatRoom(BoardIdAndTitleVO vo) {
 
-		ChatRoom chatRoom = ChatRoom.create(dto);
+		ChatRoom chatRoom = ChatRoom.create(vo);
 		hashOpsChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
 		return chatRoom;
 	}

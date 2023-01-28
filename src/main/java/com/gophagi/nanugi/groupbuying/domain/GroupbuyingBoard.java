@@ -1,6 +1,5 @@
 package com.gophagi.nanugi.groupbuying.domain;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
+import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
+
+import org.hibernate.validator.constraints.URL;
 
 import com.gophagi.nanugi.common.util.file.domain.Photo;
 import com.gophagi.nanugi.common.util.timestamp.BaseTime;
@@ -39,23 +42,25 @@ public class GroupbuyingBoard extends BaseTime {
 	private Category category;
 	@Enumerated(value = EnumType.STRING)
 	private Status status;
+	@PositiveOrZero
 	private Integer price;
+	@URL(message = "It's not a valid url")
 	private String url;
-	private String deliveryAddress;
-	private String deliveryDetailAddress;
-	private LocalDateTime expirationDate;
+	private String regionCode;
+	private String wishLocationAddress;
 	private Integer limitedNumberOfParticipants;
 	private String description;
 	private Integer viewCount;
 	@OneToMany(mappedBy = "groupbuyingBoard", orphanRemoval = true)
 	private List<Participant> participants;
+	@Valid
 	@OneToMany(mappedBy = "groupbuyingBoard", orphanRemoval = true)
 	private List<Photo> photos;
 
 	@Builder
 	public GroupbuyingBoard(Long id, String title, Category category, Status status, Integer price,
-		String url, String deliveryAddress, String deliveryDetailAddress,
-		LocalDateTime expirationDate, Integer limitedNumberOfParticipants, String description,
+		String url, String regionCode, String wishLocationAddress,
+		Integer limitedNumberOfParticipants, String description,
 		Integer viewCount, List<Participant> participants, List<Photo> photos) {
 		this.id = id;
 		this.title = title;
@@ -63,9 +68,8 @@ public class GroupbuyingBoard extends BaseTime {
 		this.status = status;
 		this.price = price;
 		this.url = url;
-		this.deliveryAddress = deliveryAddress;
-		this.deliveryDetailAddress = deliveryDetailAddress;
-		this.expirationDate = expirationDate;
+		this.regionCode = regionCode;
+		this.wishLocationAddress = wishLocationAddress;
 		this.limitedNumberOfParticipants = limitedNumberOfParticipants;
 		this.description = description;
 		this.viewCount = viewCount;
@@ -75,8 +79,7 @@ public class GroupbuyingBoard extends BaseTime {
 
 	@PrePersist
 	public void prePersist() {
-		this.status = Status.ONGOING;
-		this.expirationDate = LocalDateTime.now().plusDays(7);
+		this.status = Status.GATHERING;
 		this.viewCount = 0;
 	}
 
@@ -88,9 +91,8 @@ public class GroupbuyingBoard extends BaseTime {
 			.status(dto.getStatus())
 			.price(dto.getPrice())
 			.url(dto.getUrl())
-			.deliveryAddress(dto.getDeliveryAddress())
-			.deliveryDetailAddress(dto.getDeliveryDetailAddress())
-			.expirationDate(dto.getExpirationDate())
+			.regionCode(dto.getRegionCode())
+			.wishLocationAddress(dto.getWishLocationAddress())
 			.limitedNumberOfParticipants(dto.getLimitedNumberOfParticipants())
 			.description(dto.getDescription())
 			.viewCount(dto.getViewCount())
@@ -98,17 +100,37 @@ public class GroupbuyingBoard extends BaseTime {
 	}
 
 	public void update(GroupbuyingBoardDTO dto) {
-		this.title = dto.getTitle();
-		this.category = dto.getCategory();
-		this.status = dto.getStatus();
-		this.price = dto.getPrice();
-		this.url = dto.getUrl();
-		this.deliveryAddress = dto.getDeliveryAddress();
-		this.deliveryDetailAddress = dto.getDeliveryDetailAddress();
-		this.expirationDate = dto.getExpirationDate();
-		this.limitedNumberOfParticipants = dto.getLimitedNumberOfParticipants();
-		this.description = dto.getDescription();
-		this.viewCount = dto.getViewCount();
+		if (Objects.nonNull(dto.getTitle()) && !this.title.equals(dto.getTitle())) {
+			this.title = dto.getTitle();
+		}
+		if (Objects.nonNull(dto.getCategory()) && !this.category.equals(dto.getCategory())) {
+			this.category = dto.getCategory();
+		}
+		if (Objects.nonNull(dto.getPrice()) && !this.price.equals(dto.getPrice())) {
+			this.price = dto.getPrice();
+		}
+		if (Objects.nonNull(dto.getUrl()) && !this.url.equals(dto.getUrl())) {
+			this.url = dto.getUrl();
+		}
+		if (Objects.nonNull(dto.getRegionCode()) && !this.regionCode.equals(dto.getRegionCode())) {
+			this.regionCode = dto.getRegionCode();
+		}
+		if (Objects.nonNull(dto.getWishLocationAddress())) {
+			if (Objects.isNull(this.wishLocationAddress) || !this.wishLocationAddress.equals(
+				dto.getWishLocationAddress())) {
+				this.wishLocationAddress = dto.getWishLocationAddress();
+			}
+		}
+		if (Objects.nonNull(dto.getLimitedNumberOfParticipants()) && !this.limitedNumberOfParticipants.equals(
+			dto.getLimitedNumberOfParticipants())) {
+			this.limitedNumberOfParticipants = dto.getLimitedNumberOfParticipants();
+		}
+		if (Objects.nonNull(dto.getDescription()) && !this.description.equals(dto.getDescription())) {
+			this.description = dto.getDescription();
+		}
+		if (Objects.nonNull(dto.getViewCount()) && !this.viewCount.equals(dto.getViewCount())) {
+			this.viewCount = dto.getViewCount();
+		}
 	}
 
 	public boolean isFull() {
@@ -139,5 +161,9 @@ public class GroupbuyingBoard extends BaseTime {
 				photos.remove(test.get(deletePhotoId));
 			}
 		}
+	}
+
+	public void updateStatus(Status status) {
+		this.status = status;
 	}
 }

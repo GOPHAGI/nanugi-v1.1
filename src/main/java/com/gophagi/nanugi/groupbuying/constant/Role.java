@@ -2,6 +2,8 @@ package com.gophagi.nanugi.groupbuying.constant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.gophagi.nanugi.common.excepion.ErrorCode;
+import com.gophagi.nanugi.groupbuying.exception.InvalidRoleException;
 
 public enum Role {
 	PROMOTER("개설자"), PARTICIPANT("참여자");
@@ -25,6 +27,6 @@ public enum Role {
 			case "PARTICIPANT":
 				return Role.PARTICIPANT;
 		}
-		return Role.PROMOTER;
+		throw new InvalidRoleException(ErrorCode.INVALID_ROLE);
 	}
 }
