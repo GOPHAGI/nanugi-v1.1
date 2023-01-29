@@ -60,10 +60,6 @@ dependencies {
 	//runtimeOnly 'com.h2database:h2'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.websocket'
