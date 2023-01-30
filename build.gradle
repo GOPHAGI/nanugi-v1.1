@@ -23,10 +23,20 @@ plugins {
 group = 'com.gophagi'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+
+group = 'com.websocket'
+version = '0.0.1-SNAPSHOT'
+
 apply plugin: 'war'
+apply plugin: 'io.spring.dependency-management'
 
 repositories {
 	mavenCentral()
+}
+
+bootWar {
+	archiveFileName = "nanugi.war"
+	archiveVersion = "0.0.0"
 }
 
 dependencies {
@@ -38,8 +48,10 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok' //lombok추가
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation "org.springframework.cloud:spring-cloud-starter-openfeign:3.1.0" //feignClient
-	implementation "mysql:mysql-connector-java"
+	//implementation "mysql:mysql-connector-java"
 	compileOnly 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE' //s3
+	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
+	implementation 'com.amazonaws:aws-java-sdk-s3'
 
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -49,18 +61,13 @@ dependencies {
 	implementation 'org.webjars:stomp-websocket:2.3.3-1'
 	implementation 'com.google.code.gson:gson:2.8.0'
 
+	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-	//embedded-redis
-	compileOnly group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
+	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
+
+	//implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
 	implementation 'javax.validation:validation-api:2.0.1.Final'
 
-
-	//implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	//runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'com.h2database:h2'
 }
-
-apply plugin: 'io.spring.dependency-management'
-
-group = 'com.websocket'
-version = '0.0.1-SNAPSHOT'
