@@ -4,7 +4,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 
-import com.gophagi.nanugi.chatting.dto.ChatMessage;
+import com.gophagi.nanugi.chatting.constant.MessageType;
+import com.gophagi.nanugi.chatting.dto.ChatMessageDTO;
 import com.gophagi.nanugi.chatting.repository.ChatRoomRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,15 +34,15 @@ public class ChatService {
 	/**
 	 * 채팅방에 메시지 발송
 	 */
-	public void sendChatMessage(ChatMessage chatMessage) {
-		chatMessage.setUserCount(chatRoomRepository.getUserCount(chatMessage.getRoomId()));
-		if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
-			chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
-			chatMessage.setSender("[알림]");
-		} else if (ChatMessage.MessageType.QUIT.equals(chatMessage.getType())) {
-			chatMessage.setMessage(chatMessage.getSender() + "님이 방에서 나갔습니다.");
-			chatMessage.setSender("[알림]");
+	public void sendChatMessage(ChatMessageDTO chatMessageDTO) {
+		chatMessageDTO.setUserCount(chatRoomRepository.getUserCount(chatMessageDTO.getRoomId()));
+		if (MessageType.ENTER.equals(chatMessageDTO.getType())) {
+			chatMessageDTO.setMessage(chatMessageDTO.getSender() + "님이 방에 입장했습니다.");
+			chatMessageDTO.setSender("[알림]");
+		} else if (MessageType.QUIT.equals(chatMessageDTO.getType())) {
+			chatMessageDTO.setMessage(chatMessageDTO.getSender() + "님이 방에서 나갔습니다.");
+			chatMessageDTO.setSender("[알림]");
 		}
-		redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
+		redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessageDTO);
 	}
 }

@@ -4,7 +4,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
-import com.gophagi.nanugi.chatting.dto.ChatMessage;
+import com.gophagi.nanugi.chatting.dto.ChatMessageDTO;
 import com.gophagi.nanugi.chatting.repository.ChatRoomRepository;
 import com.gophagi.nanugi.chatting.service.ChatService;
 import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
@@ -23,7 +23,7 @@ public class ChatController {
 	 * websocket "/pub/chat/message"로 들어오는 메시징을 처리한다.
 	 */
 	@MessageMapping("${chatting.message-url}")
-	public void message(ChatMessage message, @Header("token") String token) {
+	public void message(ChatMessageDTO message, @Header("token") String token) {
 		String nickname = jwtTokenProvider.getUserNameFromJwt(token);
 		// 로그인 회원 정보로 대화명 설정
 		message.setSender(nickname);

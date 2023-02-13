@@ -10,11 +10,12 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
-import com.gophagi.nanugi.chatting.dto.ChatMessage;
+import com.gophagi.nanugi.chatting.constant.MessageType;
+import com.gophagi.nanugi.chatting.dto.ChatMessageDTO;
 import com.gophagi.nanugi.chatting.repository.ChatRoomRepository;
 import com.gophagi.nanugi.chatting.service.ChatService;
-import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
 import com.gophagi.nanugi.common.auth.CommonAuthentication;
+import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
 import com.gophagi.nanugi.groupbuying.exception.NoAuthorityException;
 
 import lombok.RequiredArgsConstructor;
@@ -78,7 +79,7 @@ public class StompHandler implements ChannelInterceptor {
 
 		// 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
 		String name = JwtTokenProvider.getUserNameFromJwt(jwtToken);
-		chatService.sendChatMessage(buildChatMessage(roomId, name, ChatMessage.MessageType.ENTER));
+		chatService.sendChatMessage(buildChatMessage(roomId, name, MessageType.ENTER));
 
 		log.info("SUBSCRIBED {}, {}, {}", userId, name, roomId);
 	}
@@ -98,7 +99,7 @@ public class StompHandler implements ChannelInterceptor {
 		chatRoomRepository.minusUserCount(roomId);
 
 		// 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
-		chatService.sendChatMessage(buildChatMessage(roomId, name, ChatMessage.MessageType.QUIT));
+		chatService.sendChatMessage(buildChatMessage(roomId, name, MessageType.QUIT));
 
 		// 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
 		chatRoomRepository.removeUserEnterInfo(userId, roomId);
@@ -138,7 +139,7 @@ public class StompHandler implements ChannelInterceptor {
 		chatRoomRepository.minusUserCount(roomId);
 
 		// 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
-		chatService.sendChatMessage(buildChatMessage(roomId, name, ChatMessage.MessageType.QUIT));
+		chatService.sendChatMessage(buildChatMessage(roomId, name, MessageType.QUIT));
 
 		// 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
 		chatRoomRepository.removeUserEnterInfo(kickOutUserId, roomId);
@@ -154,8 +155,8 @@ public class StompHandler implements ChannelInterceptor {
 		return String.valueOf(message.getHeaders().getId());
 	}
 
-	private ChatMessage buildChatMessage(String roomId, String name, ChatMessage.MessageType messageType) {
-		return ChatMessage.builder().type(messageType).roomId(roomId).sender(name).build();
+	private ChatMessageDTO buildChatMessage(String roomId, String name, MessageType messageType) {
+		return ChatMessageDTO.builder().type(messageType).roomId(roomId).sender(name).build();
 	}
 
 	private String getUserIdBySimpUser(Message<?> message) {

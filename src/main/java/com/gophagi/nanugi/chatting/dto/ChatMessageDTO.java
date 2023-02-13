@@ -1,28 +1,25 @@
 package com.gophagi.nanugi.chatting.dto;
 
+import com.gophagi.nanugi.chatting.constant.MessageType;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ChatMessage {
+public class ChatMessageDTO {
 
-	public ChatMessage() {
+	public ChatMessageDTO() {
 	}
 
 	@Builder
-	public ChatMessage(MessageType type, String roomId, String sender, String message, long userCount) {
+	public ChatMessageDTO(MessageType type, String roomId, String sender, String message, long userCount) {
 		this.type = type;
 		this.roomId = roomId;
 		this.sender = sender;
 		this.message = message;
 		this.userCount = userCount;
-	}
-
-	// 메시지 타입 : 입장, 퇴장, 채팅
-	public enum MessageType {
-		ENTER, QUIT, TALK
 	}
 
 	private MessageType type; // 메시지 타입
