@@ -4,6 +4,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gophagi.nanugi.chatting.domain.ChatMessage;
 import com.gophagi.nanugi.chatting.dto.ChatMessageDTO;
 import com.gophagi.nanugi.chatting.repository.ChatMessageRepository;
 
@@ -17,6 +18,7 @@ public class RedisSubscriber {
 
 	private final ObjectMapper objectMapper;
 	private final SimpMessageSendingOperations messagingTemplate;
+	private final ChatMessageRepository chatMessageRepository;
 
 	/**
 	 * Redis에서 메시지가 발행(publish)되면 대기하고 있던 Redis Subscriber가 해당 메시지를 받아 처리한다.
@@ -25,6 +27,9 @@ public class RedisSubscriber {
 		try {
 			// ChatMessage 객채로 맵핑
 			ChatMessageDTO chatMessageDTO = objectMapper.readValue(publishMessage, ChatMessageDTO.class);
+
+			// ChatMessage 저장
+			chatMessageRepository.save(ChatMessage.toChatMessage(chatMessageDTO));
 
 			// 채팅방을 구독한 클라이언트에게 메시지 발송
 			messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessageDTO.getRoomId(), chatMessageDTO);

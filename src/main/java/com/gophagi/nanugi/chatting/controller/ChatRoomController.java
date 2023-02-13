@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.gophagi.nanugi.chatting.domain.ChatMessage;
 import com.gophagi.nanugi.chatting.dto.ChatRoom;
 import com.gophagi.nanugi.chatting.repository.ChatRoomRepository;
-import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
+import com.gophagi.nanugi.chatting.service.ChatService;
 import com.gophagi.nanugi.common.auth.CommonAuthentication;
+import com.gophagi.nanugi.common.jwt.JwtTokenProvider;
 import com.gophagi.nanugi.groupbuying.exception.InvalidGroupbuyingBoardInstanceException;
 import com.gophagi.nanugi.groupbuying.service.GroupbuyingBoardQueryService;
 import com.gophagi.nanugi.groupbuying.vo.BoardIdAndTitleVO;
@@ -28,8 +30,8 @@ public class ChatRoomController {
 
 	private final GroupbuyingBoardQueryService groupbuyingBoardQueryService;
 	private final ChatRoomRepository chatRoomRepository;
-	private final JwtTokenProvider jwtTokenProvider;
 	private final CommonAuthentication authentication;
+	private final ChatService chatService;
 
 	// 채팅 리스트 화면
 	@GetMapping("${chatting.room-url}")
@@ -97,5 +99,11 @@ public class ChatRoomController {
 			chatRoomRepository.removeRoom(participantIds, roomId);
 
 		}
+	}
+
+	@GetMapping("${chatting.chat-history}/{roomId}")
+	@ResponseBody
+	public List<ChatMessage> loadChatHistory(@PathVariable String roomId) {
+		return chatService.loadChatHistoryByRoomId(roomId);
 	}
 }
