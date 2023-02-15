@@ -1,36 +1,46 @@
-# Commit 규칙
-## Type
-* **feat** : 새로운 기능에 대한 commit
-* **fix** : 수정에 관한 commit
-* **style** : 코드 스타일에 관한 commit
-* **refactor** : 코드 리팩토링에 대한 commit
-* **test** : test code 작업 및 수정에 대한 commit
-* **docs** : 문서 작업에 관한 commit
+# 1. 프로젝트 소개
 
-## Subject
-* 제목은 50글자 이내로 작성한다.
-* 첫글자는 대문자로 작성한다.
-* 마침표 및 특수기호는 사용하지 않는다.
-* 영문으로 작성하는 경우 동사(원형)을 가장 앞에 명령어로 작성한다.
-* 과거시제는 사용하지 않는다.
-* 개조식 구문으로 작성한다.
+---
 
-## Body
-* 선택사항
-* 72이내로 작성한다.
-* 무엇을, 왜 변경했는지 작성한다.
+💡 **개발동기** <br>
+혼자 구매하기에는 **양**이나 **배송비**가 부담스러워서 선뜻 구매를 망설였던 제품을 
+*같은 이유로 구매를 망설이고 있는* ***주변 이웃과 연결**해주면 어떨까?* 
+하는 생각에서 시작된 **P2P 소분 거래 플랫폼**입니다.
 
-## 커밋 메시지 구조
-제목 (Type: Subject)<br>
-(한줄 띄어 분리)<br>
-본문 (Body)
+▶️ **타겟 유저** <br>
+1인 가구, 배송비 아끼고 싶은 사람 등
 
+▶️ **기대 효과** <br>
+**실시간 채팅**을 통해 구매 의사를 조율하여
+사용자가 **제품을 보다 쉽고 합리적으로 구매**를 할 수 있는 **편의 제공**
 
-### PR commit 시, 기능별로 commit하기
+# 2. 프로젝트 구성도
 
+---
 
-# PR 규칙
-🙋‍♀️PR → 🙋‍♂️ 🙋 코드리뷰 요청 → 💁‍♀️ 대응 → 🙆‍♂️ 🙆 동의 → 🙆‍♀️ merge
+<img src="./img/system-structure.png" width="700" height="400" />
 
-# Java 코딩 컨벤션
-* 네이버 Java 코딩 컨벤션
+# 3. 사용 기술 및 라이브러리
+
+---
+
+**Language/Framework**
+
+- Java, Spring Boot Framework
+
+**API/Library**
+
+- JPA
+
+**DB/Infra**
+
+- AWS(EC2), AWS(S3), Amazon RDS for MySQL, AWS ElastiCache for Redis,
+
+**Collaborate**
+
+- Github, Notion
+- # 4. 주요 기능
+
+---
+
+- 채팅 기능
